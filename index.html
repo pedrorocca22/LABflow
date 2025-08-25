@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LABFLOW - Configurador de Protocolos</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@0.323.0/dist/umd/lucide.min.js"></script>
+
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+    <div id="app" class="flex flex-col h-screen">
+        <header class="bg-gray-800 text-gray-200 shadow-lg p-4 flex justify-between items-center z-10 header-animation">
+            <h1 class="text-xl font-bold text-gray-200 flex items-center gap-3">
+                <i data-lucide="blocks"></i>
+                <span>LABFLOW</span>
+            </h1>
+            <div class="flex items-center gap-4">
+                 <button id="connect-robot-btn" class="bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-700 flex items-center gap-2">
+                    <span id="connection-status-indicator" class="w-3 h-3 rounded-full bg-red-500 transition-colors"></span>
+                    <span id="connect-btn-text">Conectar al Robot</span>
+                </button>
+                <button id="undo-btn" class="bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-700 flex items-center gap-2 disabled:opacity-50" disabled>
+                    <i data-lucide="undo-2"></i>
+                    <span>Deshacer</span>
+                </button>
+                <button id="redo-btn" class="bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-700 flex items-center gap-2 disabled:opacity-50" disabled>
+                    <i data-lucide="redo-2"></i>
+                    <span>Rehacer</span>
+                </button>
+                 <button id="save-protocol-btn" class="bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-700 flex items-center gap-2">
+                    <i data-lucide="save"></i>
+                    <span>Guardar Protocolo</span>
+                </button>
+                <button id="run-protocol-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                    <i data-lucide="play"></i>
+                    <span>Ejecutar Protocolo</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="px-4 border-b border-gray-200 bg-white shadow-sm">
+            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                <a href="#" id="tab-workflow" class="border-blue-500 text-blue-600 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" aria-current="page">
+                    Workflow
+                </a>
+                <a href="#" id="tab-labware" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                    Librería Labware
+                </a>
+                <a href="#" id="tab-gallery" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                    Galería de Protocolos
+                </a>
+                <a href="#" id="tab-control" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                    Control
+                </a>
+            </nav>
+        </div>
+
+        <main id="panel-workflow" class="flex-grow grid grid-cols-1 md:grid-cols-12 gap-4 p-4 overflow-hidden">
+            <div class="md:col-span-5 bg-white rounded-lg shadow p-4 flex flex-col space-y-4">
+                <div id="deck-grid-container">
+                    <h2 class="text-lg font-semibold mb-2 border-b pb-2 flex items-center gap-2"><i data-lucide="layout-grid"></i>Mesa de Trabajo</h2>
+                    <div class="max-w-sm mx-auto">
+                        <div id="lab-deck" class="grid grid-cols-2 gap-2 p-1"></div>
+                    </div>
+                </div>
+                <div class="border-t pt-4 flex-grow flex flex-col">
+                    <h2 class="text-lg font-semibold mb-2 flex items-center gap-2"><i data-lucide="pipette"></i>Detalle del Labware</h2>
+                    <div id="labware-detail-view" class="flex-grow bg-gray-50 rounded-lg p-4 flex items-center justify-center min-h-[350px]">
+                        <p class="text-gray-500">Selecciona una acción y una bahía para visualizar.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="config-panel-container" class="md:col-span-4 bg-white rounded-lg shadow p-4 flex flex-col min-h-0">
+                <h2 id="config-panel-title" class="text-lg font-semibold mb-4 border-b pb-2 flex items-center gap-2"><i data-lucide="sliders-horizontal"></i>Configuración de Acción</h2>
+                <div id="config-panel-content" class="flex-grow overflow-y-auto">
+                     <p class="text-gray-500 text-center py-10">Selecciona o añade una acción para configurarla.</p>
+                </div>
+            </div>
+
+            <div id="routine-container" class="md:col-span-3 bg-white rounded-lg shadow p-4 flex flex-col min-h-0">
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h2 class="text-lg font-semibold flex items-center gap-2"><i data-lucide="list-checks"></i>Secuencia</h2>
+                    <button id="clear-protocol-btn" class="text-xs bg-red-100 text-red-700 font-semibold py-1 px-3 rounded-lg hover:bg-red-200 flex items-center gap-1.5">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        <span>Limpiar</span>
+                    </button>
+                </div>
+                <div id="routine-steps" class="flex-grow overflow-y-auto space-y-3">
+                    <p class="text-gray-500 text-center py-10">Añade una acción para empezar.</p>
+                </div>
+                <div class="mt-4 border-t pt-4">
+                    <button id="add-step-btn" class="w-full bg-blue-100 text-blue-700 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition duration-300 flex items-center justify-center gap-2">
+                        <i data-lucide="plus"></i>
+                        <span>Añadir Acción</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <main id="panel-labware" class="hidden flex-grow p-4">
+            <div class="bg-white rounded-lg shadow p-4 h-full flex flex-col">
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h2 class="text-lg font-semibold flex items-center gap-2"><i data-lucide="library"></i>Librería de Labware</h2>
+                    <button id="add-labware-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                        <i data-lucide="plus"></i>
+                        <span>Añadir Labware</span>
+                    </button>
+                </div>
+                <div id="labware-library-content" class="flex-grow overflow-y-auto"></div>
+            </div>
+        </main>
+
+        <main id="panel-gallery" class="hidden flex-grow p-4">
+            <div class="bg-white rounded-lg shadow p-4 h-full flex flex-col">
+                <h2 class="text-lg font-semibold flex items-center gap-2 mb-4 border-b pb-2"><i data-lucide="archive"></i>Galería de Protocolos</h2>
+                <div id="protocol-gallery-content" class="flex-grow overflow-y-auto"></div>
+            </div>
+        </main>
+        
+        <main id="panel-control" class="hidden flex-grow p-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 h-full">
+                <div class="flex flex-col gap-4">
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <h2 class="text-lg font-semibold flex items-center gap-2 mb-4 border-b pb-2"><i data-lucide="gamepad-2"></i>Control Manual (Jog)</h2>
+                        <div class="grid grid-cols-3 gap-4 items-center">
+                             <div class="col-span-2 grid grid-cols-3 gap-2 p-4 border rounded-lg bg-gray-50">
+                                <div></div>
+                                <button class="control-jog-btn py-2 bg-white border rounded shadow-sm hover:bg-gray-100" data-axis="y" data-dir="1"><i data-lucide="arrow-up"></i> Y+</button>
+                                <div></div>
+                                <button class="control-jog-btn py-2 bg-white border rounded shadow-sm hover:bg-gray-100" data-axis="x" data-dir="-1"><i data-lucide="arrow-left"></i> X-</button>
+                                <button class="control-jog-btn py-2 bg-white border rounded shadow-sm hover:bg-gray-100" data-axis="home" data-dir="xy"><i data-lucide="home"></i> XY</button>
+                                <button class="control-jog-btn py-2 bg-white border rounded shadow-sm hover:bg-gray-100" data-axis="x" data-dir="1"><i data-lucide="arrow-right"></i> X+</button>
+                                <div></div>
+                                <button class="control-jog-btn py-2 bg-white border rounded shadow-sm hover:bg-gray-100" data-axis="y" data-dir="-1"><i data-lucide="arrow-down"></i> Y-</button>
+                                <div></div>
+                            </div>
+                            <div class="flex flex-col space-y-2">
+                                 <button class="control-jog-btn py-2 bg-white border rounded shadow-sm hover:bg-gray-100" data-axis="z" data-dir="1"><i data-lucide="chevrons-up"></i> Z+</button>
+                                 <button class="control-jog-btn py-2 bg-white border rounded shadow-sm hover:bg-gray-100" data-axis="home" data-dir="z"><i data-lucide="home"></i> Z</button>
+                                 <button class="control-jog-btn py-2 bg-white border rounded shadow-sm hover:bg-gray-100" data-axis="z" data-dir="-1"><i data-lucide="chevrons-down"></i> Z-</button>
+                                 <div class="pt-2">
+                                    <label for="control-jog-step" class="text-sm font-medium">Paso (mm):</label>
+                                    <select id="control-jog-step" class="w-full mt-1 p-2 border rounded-md">
+                                        <option value="0.1">0.1</option>
+                                        <option value="1" selected>1</option>
+                                        <option value="10">10</option>
+                                        <option value="50">50</option>
+                                    </select>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 flex-grow">
+                        <h2 class="text-lg font-semibold flex items-center gap-2 mb-4 border-b pb-2"><i data-lucide="sliders-horizontal"></i>Parámetros de la Máquina</h2>
+                        <p class="text-gray-500 text-sm">Próximamente: Configuración de velocidades, aceleraciones y flowrate.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow p-4 flex flex-col">
+                    <h2 class="text-lg font-semibold flex items-center gap-2 mb-4 border-b pb-2"><i data-lucide="monitor"></i>Monitor de Comunicación</h2>
+                    <div id="control-log-console" class="fira-code bg-gray-900 text-white text-sm rounded-lg p-4 h-64 overflow-y-auto flex-grow">
+                        <p class="text-gray-400">Esperando conexión...</p>
+                    </div>
+                    <div class="mt-4 pt-4 border-t">
+                        <h3 class="text-md font-semibold mb-3">Control del Protocolo</h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button id="pause-protocol-btn" class="bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 flex items-center justify-center gap-2"><i data-lucide="pause"></i>Pausar</button>
+                            <button id="resume-protocol-btn" class="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 flex items-center justify-center gap-2"><i data-lucide="play"></i>Reanudar</button>
+                            <button id="cancel-protocol-btn" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 flex items-center justify-center gap-2"><i data-lucide="stop-circle"></i>Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="connection-modal" class="modal-overlay">
+        <div class="modal-container max-w-sm">
+            <h3 class="text-xl font-semibold mb-4">Conectar al Robot</h3>
+            <div class="config-form-group">
+                <label for="klipper-ip">Dirección IP de Klipper</label>
+                <input type="text" id="klipper-ip" name="klipperIp" class="w-full" placeholder="192.168.1.100">
+            </div>
+            <div id="connection-error-msg" class="hidden text-sm text-red-600 bg-red-50 p-3 rounded-lg mb-4"></div>
+            <div class="mt-6 text-right space-x-2">
+                <button type="button" id="cancel-connection-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancelar</button>
+                <button type="button" id="submit-connection-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Conectar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="labware-modal" class="modal-overlay">
+        <div class="modal-container">
+            <h3 class="text-xl font-semibold mb-4">Seleccionar Labware</h3>
+            <div id="labware-options" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
+            <div class="mt-6 text-right">
+                <button id="cancel-labware-selection" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    <div id="add-action-modal" class="modal-overlay">
+        <div class="modal-container">
+            <h3 class="text-xl font-semibold mb-4">Seleccionar Acción o Asistente</h3>
+            <div id="action-options" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
+            <div class="mt-6 text-right">
+                <button id="cancel-action-selection" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-labware-modal" class="modal-overlay">
+        <div class="modal-container max-w-2xl">
+            <h3 id="labware-modal-title" class="text-xl font-semibold mb-4">Añadir Nuevo Labware</h3>
+            <form id="add-labware-form" class="space-y-4 text-sm">
+                <input type="hidden" id="labware-id" name="labwareId">
+                
+                <div id="calibration-data-display" class="p-3 border rounded-lg hidden">
+                    <h4 class="font-medium text-gray-700 mb-2 flex items-center gap-2"><i data-lucide="scan-line" class="text-red-500"></i>Datos de Calibración (Crítico)</h4>
+                    <p id="calibration-summary-text" class="text-xs text-gray-500 mb-3"></p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="config-form-group"><label id="calib-z-safe-label" for="calib-z-safe"></label><input type="text" id="calib-z-safe" disabled class="bg-gray-100"></div>
+                        <div class="config-form-group"><label id="calib-z-bottom-label" for="calib-z-bottom"></label><input type="text" id="calib-z-bottom" disabled class="bg-gray-100"></div>
+                    </div>
+                </div>
+
+                <div class="p-3 border rounded-lg">
+                    <h4 class="font-medium text-gray-700 mb-2">Metadatos</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="config-form-group"><label for="labware-displayName">Nombre a Mostrar</label><input type="text" id="labware-displayName" name="displayName" required></div>
+                        <div class="config-form-group"><label for="labware-displayCategory">Categoría</label><select id="labware-displayCategory" name="displayCategory"><option value="wellPlate">Well Plate</option><option value="tipRack">Tip Rack</option><option value="reservoir">Reservoir</option><option value="other">Otro</option></select></div>
+                        <div class="config-form-group"><label for="labware-brand">Marca</label><input type="text" id="labware-brand" name="brand"></div>
+                        <div class="config-form-group hidden" id="well-bottom-shape-group"><label for="labware-wellBottomShape">Forma del Fondo del Pocillo</label><select id="labware-wellBottomShape" name="wellBottomShape"><option value="flat">Plano (Flat)</option><option value="conical">Cónico (Conical)</option><option value="spherical">Esférico (Spherical)</option></select></div>
+                        <div id="is-source-container" class="md:col-span-2">
+                            <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                <input type="checkbox" id="labware-isSource" name="isSource" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <label for="labware-isSource" class="text-sm font-medium text-gray-900">
+                                    Habilitar como contenedor de origen (ignora validación de volumen inicial)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-3 border rounded-lg">
+                    <h4 class="font-medium text-gray-700 mb-2">Dimensiones (mm)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="config-form-group"><label for="labware-xDimension">Dimensión X</label><input type="number" id="labware-xDimension" name="xDimension" step="0.01" required value="127.76"></div>
+                        <div class="config-form-group"><label for="labware-yDimension">Dimensión Y</label><input type="number" id="labware-yDimension" name="yDimension" step="0.01" required value="85.48"></div>
+                    </div>
+                </div>
+                <div class="p-3 border rounded-lg">
+                    <h4 class="font-medium text-gray-700 mb-2">Rejilla</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="config-form-group"><label for="labware-rows">Filas</label><input type="number" id="labware-rows" name="rows" min="1" required value="8"></div>
+                        <div class="config-form-group"><label for="labware-columns">Columnas</label><input type="number" id="labware-columns" name="columns" min="1" required value="12"></div>
+                    </div>
+                </div>
+                <div class="p-3 border rounded-lg">
+                    <h4 class="font-medium text-gray-700 mb-2">Propiedades de Pocillo/Punta</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="config-form-group"><label for="labware-diameter">Diámetro (mm)</label><input type="number" id="labware-diameter" name="diameter" step="0.01" required value="6.86"></div>
+                        <div class="config-form-group"><label for="labware-spacing">Espaciado (mm)</label><input type="number" id="labware-spacing" name="spacing" step="0.01" required value="9"></div>
+                        <div class="config-form-group"><label for="labware-offsetX">Offset X (mm)</label><input type="number" id="labware-offsetX" name="offsetX" step="0.01" required value="14.38"></div>
+                        <div class="config-form-group"><label for="labware-offsetY">Offset Y (mm)</label><input type="number" id="labware-offsetY" name="offsetY" step="0.01" required value="11.24"></div>
+                        <div class="config-form-group"><label for="labware-bottomZ">Coordenada Z del fondo (mm)</label><input type="number" id="labware-bottomZ" name="bottomZ" step="0.01" required value="1.0"></div>
+                        <div class="config-form-group required-field-group">
+                            <label for="labware-maxVolume">Volumen Máximo (µL)</label>
+                            <input type="number" id="labware-maxVolume" name="maxVolume" step="1" required value="360">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 text-right space-x-2">
+                    <button type="button" id="cancel-add-labware" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Guardar Labware</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="delete-confirm-modal" class="modal-overlay">
+        <div class="modal-container max-w-sm">
+            <h3 id="delete-modal-title" class="text-xl font-semibold mb-2">Confirmar Eliminación</h3>
+            <p id="delete-modal-text" class="text-gray-600 mb-6">¿Estás seguro? Esta acción es definitiva.</p>
+            <div class="text-right space-x-2">
+                <button id="cancel-delete-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancelar</button>
+                <button id="confirm-delete-btn" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700">Confirmar Borrado</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="save-protocol-modal" class="modal-overlay">
+        <div class="modal-container max-w-md">
+            <h3 class="text-xl font-semibold mb-4">Guardar Protocolo</h3>
+            <form id="save-protocol-form" class="space-y-4">
+                <div class="config-form-group">
+                    <label for="protocol-name">Nombre del Protocolo</label>
+                    <input type="text" id="protocol-name" name="protocolName" required class="w-full">
+                </div>
+                <div class="config-form-group">
+                    <label for="protocol-author">Autor/a</label>
+                    <input type="text" id="protocol-author" name="protocolAuthor" required class="w-full">
+                </div>
+                <div class="mt-6 text-right space-x-2">
+                    <button type="button" id="cancel-save-protocol" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="jog-control-modal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 600px;">
+            <h3 id="jog-modal-title" class="text-xl font-semibold mb-2">Calibración Manual de Labware</h3>
+            <p id="jog-instructions" class="text-gray-600 mb-4 bg-blue-50 p-3 rounded-lg border border-blue-200">Cargando...</p>
+
+            <div id="wizard-inputs" class="mb-4"></div>
+
+            <div class="grid grid-cols-3 gap-4 items-center">
+                <div class="col-span-2 grid grid-cols-3 gap-2 p-4 border rounded-lg bg-gray-50">
+                    <div></div>
+                    <button class="jog-btn py-2 bg-white border rounded shadow-sm hover:bg-gray-100" data-axis="y" data-dir="1"><i data-lucide="arrow-up"></i> Y+</button>
+                    <div></div>
+                    <button class="jog-btn py-2 bg-white border rounded shadow-sm hover:bg-gray-100" data-axis="x" data-dir="-1"><i data-lucide="arrow-left"></i> X-</button>
+                    <div class="flex flex-col items-center justify-center">
+                        <span id="current-coords" class="text-sm font-mono text-center block">X:-- Y:-- Z:--</span>
+                    </div>
+                    <button class="jog-btn py-2 bg-white border rounded shadow-sm hover:bg-gray-100" data-axis="x" data-dir="1"><i data-lucide="arrow-right"></i> X+</button>
+                    <div></div>
+                    <button class="jog-btn py-2 bg-white border rounded shadow-sm hover:bg-gray-100" data-axis="y" data-dir="-1"><i data-lucide="arrow-down"></i> Y-</button>
+                    <div></div>
+                </div>
+
+                <div class="flex flex-col space-y-2">
+                     <button class="jog-btn py-2 bg-white border rounded shadow-sm hover:bg-gray-100" data-axis="z" data-dir="1"><i data-lucide="chevrons-up"></i> Z+</button>
+                     <button class="jog-btn py-2 bg-white border rounded shadow-sm hover:bg-gray-100" data-axis="z" data-dir="-1"><i data-lucide="chevrons-down"></i> Z-</button>
+                     <div class="pt-2">
+                        <label for="jog-step" class="text-sm font-medium">Paso (mm):</label>
+                        <select id="jog-step" class="w-full mt-1 p-2 border rounded-md">
+                            <option value="0.1">0.1</option>
+                            <option value="1" selected>1</option>
+                            <option value="10">10</option>
+                            <option value="50">50</option>
+                        </select>
+                     </div>
+                </div>
+            </div>
+
+            <div class="mt-6 text-right space-x-2">
+                <button id="cancel-jog-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancelar</button>
+                <button id="save-point-btn" class="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700">Guardar Punto</button>
+                <button id="finish-calibration-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 hidden">Finalizar Calibración</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="serial-dilution-modal" class="modal-overlay">
+        <div class="modal-container max-w-2xl">
+            <h3 class="text-xl font-semibold mb-4">Asistente de Dilución en Serie</h3>
+            <form id="serial-dilution-form" class="space-y-4 text-sm">
+                <div class="p-4 border rounded-lg grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <div class="md:col-span-2">
+                        <h4 class="font-medium text-gray-700 mb-2">Ubicaciones</h4>
+                    </div>
+                    <div class="config-form-group">
+                        <label for="sd-plate-slot">Placa de Destino</label>
+                        <select id="sd-plate-slot" name="plateSlot" required></select>
+                    </div>
+                    <div class="config-form-group">
+                        <label for="sd-diluent-slot">Fuente del Diluyente (Reservorio)</label>
+                        <select id="sd-diluent-slot" name="diluentSlot" required></select>
+                    </div>
+                    <div class="config-form-group">
+                        <label for="sd-stock-slot">Fuente de Solución Madre</label>
+                        <select id="sd-stock-slot" name="stockSlot" required></select>
+                    </div>
+                     <div class="config-form-group">
+                        <label for="sd-stock-well">Pocillo de Solución Madre</label>
+                        <select id="sd-stock-well" name="stockWell" required></select>
+                    </div>
+                </div>
+
+                <div class="p-4 border rounded-lg grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4">
+                    <div class="md:col-span-2 lg:col-span-4">
+                        <h4 class="font-medium text-gray-700 mb-2">Parámetros de Dilución</h4>
+                    </div>
+                     <div class="config-form-group">
+                        <label for="sd-final-volume">Volumen Final (µL)</label>
+                        <input type="number" id="sd-final-volume" name="finalVolume" required value="200" min="1">
+                    </div>
+                    <div class="config-form-group">
+                        <label for="sd-dilution-factor">Factor de Dilución (ej. 10)</label>
+                        <input type="number" id="sd-dilution-factor" name="dilutionFactor" required value="10" min="1.1" step="0.1">
+                    </div>
+                    <div class="config-form-group">
+                        <label for="sd-dilution-count">Número de Diluciones</label>
+                        <input type="number" id="sd-dilution-count" name="dilutionCount" required value="8" min="1">
+                    </div>
+                    <div class="config-form-group">
+                        <label for="sd-tip-strategy">Estrategia de Puntas</label>
+                        <select id="sd-tip-strategy" name="tipStrategy">
+                            <option value="same_tip">Usar la misma punta</option>
+                            <option value="new_tip">Punta nueva por dilución</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-right space-x-2">
+                    <button type="button" id="cancel-serial-dilution" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Generar Pasos</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="elisa-modal" class="modal-overlay">
+        <div class="modal-container max-w-4xl">
+            <h3 class="text-xl font-semibold mb-4">Asistente para Ensayo ELISA</h3>
+            <form id="elisa-form" class="space-y-4 text-sm">
+                
+                <div class="p-4 border rounded-lg">
+                    <h4 class="font-medium text-gray-700 mb-2">Configuración General y de Lavado</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="config-form-group"><label for="elisa-plate-slot">Placa de Ensayo</label><select id="elisa-plate-slot" name="plateSlot" required></select></div>
+                        <div class="config-form-group"><label for="elisa-wash-buffer-slot">Buffer de Lavado</label><select id="elisa-wash-buffer-slot" name="washBufferSlot" required></select></div>
+                        <div class="config-form-group"><label for="elisa-waste-slot">Bahía de Desechos</label><select id="elisa-waste-slot" name="wasteSlot" required></select></div>
+                        <div class="config-form-group"><label for="elisa-wash-volume">Volumen de Lavado (µL)</label><input type="number" id="elisa-wash-volume" name="washVolume" required value="300" min="1"></div>
+                        <div class="config-form-group"><label for="elisa-wash-repetitions">Repeticiones por Ciclo</label><input type="number" id="elisa-wash-repetitions" name="washRepetitions" required value="3" min="1"></div>
+                    </div>
+                </div>
+
+                <div class="p-4 border rounded-lg">
+                    <h4 class="font-medium text-gray-700 mb-2">Asignación de Reactivos y Secuencia</h4>
+                    <div id="elisa-reagent-assignment-container" class="space-y-3">
+                        </div>
+                    <div id="elisa-manual-step-warning" class="hidden mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700">
+                        <p><b class="font-semibold">Atención:</b> Se necesita un cambio manual de reactivos. El protocolo generará pausas con instrucciones específicas sobre qué reactivo reemplazar en qué bahía.</p>
+                    </div>
+                </div>
+                <div class="mt-6 text-right space-x-2">
+                    <button type="button" id="cancel-elisa" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Generar Pasos</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="alamarblue-modal" class="modal-overlay">
+        <div class="modal-container max-w-3xl">
+            <h3 class="text-xl font-semibold mb-4">Asistente para Ensayo AlamarBlue</h3>
+            <form id="alamarblue-form" class="space-y-4 text-sm">
+                <div class="p-4 border rounded-lg grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+                    <div class="md:col-span-3"><h4 class="font-medium text-gray-700 mb-2">Ubicaciones del Labware</h4></div>
+                    <div class="config-form-group"><label for="ab-culture-plate-slot">Placa de Cultivo (48 pocillos)</label><select id="ab-culture-plate-slot" name="culturePlateSlot" required></select></div>
+                    <div class="config-form-group"><label for="ab-read-plate-slot">Placa de Lectura (96 pocillos)</label><select id="ab-read-plate-slot" name="readPlateSlot" required></select></div>
+                    <div class="config-form-group"><label for="ab-waste-slot">Bahía de Desechos Líquidos</label><select id="ab-waste-slot" name="wasteSlot" required></select></div>
+                    <div class="config-form-group"><label for="ab-pbs-slot">Reservorio de PBS</label><select id="ab-pbs-slot" name="pbsSlot" required></select></div>
+                    <div class="config-form-group"><label for="ab-reagent-slot">Reservorio de AlamarBlue</label><select id="ab-reagent-slot" name="reagentSlot" required></select></div>
+                </div>
+
+                <div class="p-4 border rounded-lg">
+                    <div class="md:col-span-2"><h4 class="font-medium text-gray-700 mb-2">Selección de Pocillos</h4></div>
+                    <p class="text-xs text-gray-500 mb-3">Haz clic en un botón para abrir la vista de la placa de cultivo y seleccionar los pocillos correspondientes.</p>
+                    <div class="flex gap-4">
+                        <button type="button" id="ab-select-assay-wells" class="flex-1 bg-pink-100 text-pink-800 font-semibold py-2 px-4 rounded-lg hover:bg-pink-200">Seleccionar Pocillos de Ensayo</button>
+                        <button type="button" id="ab-select-control-wells" class="flex-1 bg-green-100 text-green-800 font-semibold py-2 px-4 rounded-lg hover:bg-green-200">Seleccionar Pocillos de Control</button>
+                    </div>
+                </div>
+
+                <div class="p-4 border rounded-lg grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+                    <div class="md:col-span-3"><h4 class="font-medium text-gray-700 mb-2">Parámetros del Protocolo</h4></div>
+                    <div class="config-form-group"><label for="ab-wash-count">Número de Lavados</label><input type="number" id="ab-wash-count" name="washCount" required value="3" min="1"></div>
+                    <div class="config-form-group"><label for="ab-wash-volume">Volumen de Lavado (µL)</label><input type="number" id="ab-wash-volume" name="washVolume" required value="1000" min="1"></div>
+                    <div class="config-form-group"><label for="ab-reagent-volume">Volumen de AlamarBlue (µL)</label><input type="number" id="ab-reagent-volume" name="reagentVolume" required value="500" min="1"></div>
+                    <div class="config-form-group"><label for="ab-incubation-hours">Tiempo de Incubación (horas)</label><input type="number" id="ab-incubation-hours" name="incubationHours" required value="4" min="0"></div>
+                    <div class="config-form-group"><label for="ab-transfer-volume">Volumen a Transferir (µL)</label><input type="number" id="ab-transfer-volume" name="transferVolume" required value="150" min="1"></div>
+                </div>
+
+                <div class="mt-6 text-right space-x-2">
+                    <button type="button" id="cancel-alamarblue" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Generar Pasos</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/wizards.js"></script>
+</body>
+</html>
