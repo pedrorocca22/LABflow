@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { X, FlaskConical } from 'lucide-react';
+import { toast } from 'sonner';
 import { useLabflowStore } from '@/stores/useLabflowStore';
 
 export default function SerialDilutionWizard() {
@@ -31,7 +32,7 @@ export default function SerialDilutionWizard() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const { plateSlot, diluentSlot, stockSlot, stockWell, finalVolume, dilutionFactor, dilutionCount, tipStrategy } = form;
-    if (!plateSlot || !diluentSlot || !stockSlot || !stockWell) { alert('Completa todos los campos'); return; }
+    if (!plateSlot || !diluentSlot || !stockSlot || !stockWell) { toast.error('Completa todos los campos'); return; }
 
     const transferVolume = finalVolume / dilutionFactor;
     const diluentVolume = finalVolume - transferVolume;
@@ -45,7 +46,7 @@ export default function SerialDilutionWizard() {
     const stockWellIndex = allWells.indexOf(stockWell);
     const seriesStart = stockSlot === plateSlot ? stockWellIndex : 0;
     if (seriesStart + parseInt(dilutionCount) >= allWells.length) {
-      alert('No hay suficientes pocillos consecutivos'); return;
+      toast.error('No hay suficientes pocillos consecutivos'); return;
     }
 
     const firstWell = allWells[seriesStart];

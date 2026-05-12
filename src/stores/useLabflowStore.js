@@ -329,6 +329,24 @@ export const useLabflowStore = create(
         state.protocolSequence.splice(targetIdx, 0, item);
         get().pushHistory();
       }),
+    moveStepUp: (stepId) =>
+      set((state) => {
+        const idx = state.protocolSequence.findIndex((s) => s.id === stepId);
+        if (idx <= 0) return;
+        const temp = state.protocolSequence[idx];
+        state.protocolSequence[idx] = state.protocolSequence[idx - 1];
+        state.protocolSequence[idx - 1] = temp;
+        get().pushHistory();
+      }),
+    moveStepDown: (stepId) =>
+      set((state) => {
+        const idx = state.protocolSequence.findIndex((s) => s.id === stepId);
+        if (idx === -1 || idx >= state.protocolSequence.length - 1) return;
+        const temp = state.protocolSequence[idx];
+        state.protocolSequence[idx] = state.protocolSequence[idx + 1];
+        state.protocolSequence[idx + 1] = temp;
+        get().pushHistory();
+      }),
     selectStep: (stepId) =>
       set((state) => {
         const isSame = state.activeStepId === stepId;
@@ -460,6 +478,16 @@ export const useLabflowStore = create(
         if (!protocol) return;
         state.deck = JSON.parse(JSON.stringify(protocol.deck));
         state.protocolSequence = JSON.parse(JSON.stringify(protocol.sequence));
+        state.activeStepId = null;
+        state.tempSelectedSourceWells.clear();
+        state.tempSelectedDestWells.clear();
+        get().pushHistory();
+      }),
+    importProtocol: (data) =>
+      set((state) => {
+        if (!data || !Array.isArray(data.sequence)) return;
+        state.deck = JSON.parse(JSON.stringify(data.deck || state.deck));
+        state.protocolSequence = JSON.parse(JSON.stringify(data.sequence));
         state.activeStepId = null;
         state.viewingSlotId = null;
         state.tempSelectedSourceWells.clear();

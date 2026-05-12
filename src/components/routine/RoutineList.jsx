@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { ListChecks, Plus, Trash2, Copy } from 'lucide-react';
+import { ListChecks, Plus, Trash2, Copy, ArrowUp, ArrowDown, ListPlus } from 'lucide-react';
+import { toast } from 'sonner';
 import { useLabflowStore } from '@/stores/useLabflowStore';
 
 const typeConfig = {
@@ -20,12 +21,15 @@ export default function RoutineList() {
   const deleteStep = useLabflowStore((s) => s.deleteStep);
   const cloneStep = useLabflowStore((s) => s.cloneStep);
   const moveStep = useLabflowStore((s) => s.moveStep);
+  const moveStepUp = useLabflowStore((s) => s.moveStepUp);
+  const moveStepDown = useLabflowStore((s) => s.moveStepDown);
   const openModal = useLabflowStore((s) => s.openModal);
   const clearProtocol = useLabflowStore((s) => s.clearProtocol);
   const protocolWarnings = useLabflowStore((s) => s.protocolWarnings);
   const deck = useLabflowStore((s) => s.deck);
 
   const [draggedId, setDraggedId] = useState(null);
+  const [dragOverId, setDragOverId] = useState(null);
 
   const handleDragStart = useCallback((e, stepId) => {
     setDraggedId(stepId);
@@ -36,11 +40,13 @@ export default function RoutineList() {
   const handleDragEnd = useCallback((e) => {
     e.currentTarget.classList.remove('opacity-50');
     setDraggedId(null);
+    setDragOverId(null);
   }, []);
 
   const handleDrop = useCallback(
     (e, targetId) => {
       e.preventDefault();
+      setDragOverId(null);
       if (draggedId && draggedId !== targetId) {
         moveStep(draggedId, targetId);
       }
@@ -60,7 +66,13 @@ export default function RoutineList() {
           Secuencia
         </h2>
         <button
-          onClick={clearProtocol}
+          onClick={() => {
+            if (sequence.length === 0) return;
+            toast('¿Eliminar todos los pasos?', {
+              action: { label: 'Confirmar', onClick: () => { clearProtocol(); toast.success('Protocolo limpiado'); } },
+              cancel: { label: 'Cancelar', onClick: () => {} },
+            });
+          }}
           disabled={sequence.length === 0}
           className="flex items-center gap-1 text-xs font-semibold text-danger-600 bg-danger-50 hover:bg-danger-100 disabled:opacity-40 px-2.5 py-1.5 rounded-lg transition-colors"
         >
@@ -71,7 +83,11 @@ export default function RoutineList() {
 
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {sequence.length === 0 ? (
-          <p className="text-surface-400 text-sm text-center py-10">Añade una acción para empezar.</p>
+          <div className="flex flex-col items-center justify-center py-10 text-surface-400">
+            <ListPlus className="w-10 h-10 mb-3 opacity-50" />
+            <p className="text-sm font-medium">La secuencia está vacía</p>
+            <p className="text-xs mt-1">Añade una acción para empezar a construir tu protocolo.</p>
+          </div>
         ) : (
           sequence.map((step) => {
             const isActive = step.id === activeStepId;
@@ -89,12 +105,14 @@ export default function RoutineList() {
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, step.id)}
                 onClick={() => selectStep(step.id)}
+                onDragEnter={() => setDragOverId(step.id)}
                 className={`
                   group relative bg-surface-50 border border-surface-200 rounded-lg p-3 cursor-grab active:cursor-grabbing
                   hover:border-primary-300 transition-all
                   border-l-4 ${config.color}
                   ${isActive ? 'ring-2 ring-primary-400 bg-primary-50 border-primary-300' : ''}
                   ${warning ? 'border-l-warning-500' : ''}
+                  ${dragOverId === step.id && dragOverId !== draggedId ? 'bg-primary-100/50 border-primary-400 border-dashed' : ''}
                 `}
               >
                 {warning && (
@@ -150,6 +168,23 @@ export default function RoutineList() {
                       title="Eliminar"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  <div className="flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity ml-1">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); moveStepUp(step.id); }}
+                      className="p-0.5 rounded hover:bg-surface-200 text-surface-400 hover:text-surface-600 disabled:opacity-30 transition-colors"
+                      title="Mover arriba"
+                    >
+                      <ArrowUp className="w-3 h-3" />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); moveStepDown(step.id); }}
+                      className="p-0.5 rounded hover:bg-surface-200 text-surface-400 hover:text-surface-600 disabled:opacity-30 transition-colors"
+                      title="Mover abajo"
+                    >
+                      <ArrowDown className="w-3 h-3" />
                     </button>
                   </div>
                 </div>

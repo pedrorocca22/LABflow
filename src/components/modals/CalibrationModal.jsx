@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, ChevronUp, ChevronDown, Home, X, Save, CheckCircle } from 'lucide-react';
+import { toast } from 'sonner';
 import { useLabflowStore } from '@/stores/useLabflowStore';
 import { BAY_COORDINATES, ROW_LABELS } from '@/lib/constants';
 
@@ -36,7 +37,7 @@ export default function CalibrationModal() {
         const posA1_XY = recordedPoints['Posición XY del pocillo A1'];
         const posA1_Z = recordedPoints['Profundidad Z del pocillo A1'];
         const pos_safeZ = recordedPoints['Altura Z de seguridad'];
-        if (!posA1_XY || !posA1_Z || !pos_safeZ) { alert('Faltan puntos por calibrar'); return; }
+        if (!posA1_XY || !posA1_Z || !pos_safeZ) { toast.error('Faltan puntos por calibrar. Completa todos los pasos.'); return; }
 
         const offsetX_A1 = posA1_XY.x - bayCenter.x;
         const offsetY_A1 = posA1_XY.y - bayCenter.y;
@@ -51,7 +52,7 @@ export default function CalibrationModal() {
         const posA1_XY = recordedPoints['Posición XY de la punta A1'];
         const pos_approachZ = recordedPoints['Altura Z de aproximación'];
         const pos_pickupZ = recordedPoints['Profundidad Z de recogida (MODO LENTO)'];
-        if (!posA1_XY || !pos_approachZ || !pos_pickupZ) { alert('Faltan puntos por calibrar'); return; }
+        if (!posA1_XY || !pos_approachZ || !pos_pickupZ) { toast.error('Faltan puntos por calibrar. Completa todos los pasos.'); return; }
 
         const tipVolume = parseFloat(document.getElementById('cal-tip-vol')?.value || labware.wellProperties.maxVolume || 200);
         const offsetX_A1 = posA1_XY.x - bayCenter.x;
@@ -67,7 +68,7 @@ export default function CalibrationModal() {
       }
 
       finishCalibration(calibrationData);
-      alert(`¡Calibración para "${labware.metadata.displayName}" guardada con éxito!`);
+      toast.success(`¡Calibración para "${labware.metadata.displayName}" guardada con éxito!`);
       closeModal();
     } else {
       recordCalibrationPoint();

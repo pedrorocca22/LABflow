@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { X, Activity } from 'lucide-react';
+import { toast } from 'sonner';
 import { useLabflowStore } from '@/stores/useLabflowStore';
 
 export default function AlamarBlueWizard() {
@@ -24,7 +25,7 @@ export default function AlamarBlueWizard() {
   });
 
   const handleWellSelection = (type) => {
-    if (!form.culturePlateSlot) { alert('Selecciona primero una Placa de Cultivo'); return; }
+    if (!form.culturePlateSlot) { toast.error('Selecciona primero una Placa de Cultivo'); return; }
     setActiveStepId('wizardSelection');
     setViewingSlotId(form.culturePlateSlot);
     setActiveWellSelectionTarget(type === 'assay' ? 'sourceWells' : 'destWells');
@@ -35,7 +36,7 @@ export default function AlamarBlueWizard() {
     e.preventDefault();
     const assayWells = Array.from(wizardAssayWells);
     const controlWells = Array.from(wizardControlWells);
-    if (assayWells.length === 0) { alert('Selecciona los pocillos de ensayo'); return; }
+    if (assayWells.length === 0) { toast.error('Selecciona los pocillos de ensayo'); return; }
 
     const { culturePlateSlot, readPlateSlot, wasteSlot, pbsSlot, reagentSlot, washCount, washVolume, reagentVolume, incubationHours, transferVolume } = form;
     const allWells = [...new Set([...assayWells, ...controlWells])];

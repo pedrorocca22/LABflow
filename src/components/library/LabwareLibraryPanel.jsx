@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Library, Plus, Pipette, TestTube2, Square } from 'lucide-react';
+import { Library, Plus, Pipette, TestTube2, Square, Package } from 'lucide-react';
+import { toast } from 'sonner';
 import { useLabflowStore } from '@/stores/useLabflowStore';
 
 export default function LabwareLibraryPanel() {
@@ -100,7 +101,10 @@ export default function LabwareLibraryPanel() {
                   {!inUse && (
                     <button
                       onClick={() => {
-                        if (confirm('¿Eliminar este labware?')) deleteLabwareFromLibrary(id);
+                        toast(`¿Eliminar "${lw.metadata.displayName}"?`, {
+                          action: { label: 'Eliminar', onClick: () => { deleteLabwareFromLibrary(id); toast.success('Labware eliminado'); } },
+                          cancel: { label: 'Cancelar', onClick: () => {} },
+                        });
                       }}
                       className="text-sm font-medium text-danger-600 hover:text-danger-800 transition-colors"
                     >
@@ -114,7 +118,10 @@ export default function LabwareLibraryPanel() {
         </div>
 
         {items.length === 0 && (
-          <p className="text-surface-400 text-center py-10">No hay labware en esta categoría.</p>
+          <div className="flex flex-col items-center justify-center py-10 text-surface-400">
+            <Package className="w-10 h-10 mb-3 opacity-50" />
+            <p className="text-sm font-medium">No hay labware en esta categoría</p>
+          </div>
         )}
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from 'react';
-import { SlidersHorizontal, AlertTriangle } from 'lucide-react';
+import { SlidersHorizontal, AlertTriangle, MousePointerClick } from 'lucide-react';
 import { useLabflowStore } from '@/stores/useLabflowStore';
 
 export default function ConfigPanel() {
@@ -74,8 +74,10 @@ export default function ConfigPanel() {
             Configuración de Acción
           </h2>
         </div>
-        <div className="flex-1 flex items-center justify-center text-surface-400 text-sm p-4">
-          Selecciona o añade una acción para configurarla.
+        <div className="flex-1 flex flex-col items-center justify-center text-surface-400 p-4">
+          <MousePointerClick className="w-10 h-10 mb-3 opacity-50" />
+          <p className="text-sm font-medium">Ninguna acción seleccionada</p>
+          <p className="text-xs mt-1">Selecciona o añade un paso en la secuencia para configurarlo.</p>
         </div>
       </div>
     );

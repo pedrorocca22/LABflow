@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Archive, Upload, Trash2, ListTree, ChevronUp } from 'lucide-react';
+import { Archive, Upload, Trash2, ListTree, ChevronUp, FolderOpen } from 'lucide-react';
+import { toast } from 'sonner';
 import { useLabflowStore } from '@/stores/useLabflowStore';
 import { generateProtocolDescription } from '@/lib/protocolUtils';
 
@@ -18,8 +19,10 @@ export default function ProtocolGalleryPanel() {
         </h2>
 
         {Object.keys(savedProtocols).length === 0 ? (
-          <div className="bg-surface-0 border border-surface-200 rounded-xl p-8 text-center">
-            <p className="text-surface-400">No hay protocolos guardados. ¡Guarda uno desde la pestaña Workflow!</p>
+          <div className="bg-surface-0 border border-surface-200 rounded-xl p-8 text-center flex flex-col items-center">
+            <FolderOpen className="w-10 h-10 mb-3 text-surface-300" />
+            <p className="text-surface-500 font-medium">No hay protocolos guardados</p>
+            <p className="text-surface-400 text-sm mt-1">Guarda tu primer protocolo desde la pestaña Workflow.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -90,9 +93,10 @@ export default function ProtocolGalleryPanel() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => {
-                          if (confirm(`¿Cargar "${name}"? Se sobrescribirá el workflow actual.`)) {
-                            loadProtocol(name);
-                          }
+                          toast(`¿Cargar "${name}"? Se sobrescribirá el workflow actual.`, {
+                            action: { label: 'Cargar', onClick: () => { loadProtocol(name); toast.success(`"${name}" cargado`); } },
+                            cancel: { label: 'Cancelar', onClick: () => {} },
+                          });
                         }}
                         className="flex items-center gap-1 bg-primary-50 text-primary-700 text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-primary-100 transition-colors"
                       >
@@ -101,7 +105,10 @@ export default function ProtocolGalleryPanel() {
                       </button>
                       <button
                         onClick={() => {
-                          if (confirm(`¿Eliminar "${name}"?`)) deleteProtocol(name);
+                          toast(`¿Eliminar "${name}"?`, {
+                            action: { label: 'Eliminar', onClick: () => { deleteProtocol(name); toast.success('Protocolo eliminado'); } },
+                            cancel: { label: 'Cancelar', onClick: () => {} },
+                          });
                         }}
                         className="flex items-center gap-1 bg-danger-50 text-danger-700 text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-danger-100 transition-colors"
                       >

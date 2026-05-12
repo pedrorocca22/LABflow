@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Pipette } from 'lucide-react';
+import { Pipette, Microscope } from 'lucide-react';
 import { useLabflowStore } from '@/stores/useLabflowStore';
 import { calculateWellVolumes } from '@/lib/protocolUtils';
 import { ROW_LABELS } from '@/lib/constants';
@@ -30,8 +30,10 @@ export default function LabwareDetail() {
           <Pipette className="w-5 h-5 text-primary-500" />
           Detalle del Labware
         </h2>
-        <div className="flex-1 flex items-center justify-center text-surface-400 text-sm">
-          Selecciona una acción y una bahía para visualizar.
+        <div className="flex-1 flex flex-col items-center justify-center text-surface-400">
+          <Microscope className="w-10 h-10 mb-3 opacity-50" />
+          <p className="text-sm font-medium">Ningún labware seleccionado</p>
+          <p className="text-xs mt-1">Selecciona un paso que use una bahía para visualizar sus pocillos.</p>
         </div>
       </div>
     );

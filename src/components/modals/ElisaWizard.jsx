@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { X, TestTube2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useLabflowStore } from '@/stores/useLabflowStore';
 
 const ELISA_REAGENTS = [
@@ -56,7 +57,7 @@ export default function ElisaWizard() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const { plateSlot, washBufferSlot, wasteSlot, washVolume, washRepetitions } = form;
-    if (!plateSlot || !washBufferSlot || !wasteSlot) { alert('Completa todos los campos'); return; }
+    if (!plateSlot || !washBufferSlot || !wasteSlot) { toast.error('Completa todos los campos'); return; }
 
     const plate = deck[plateSlot];
     const allWells = Array.from({ length: plate.grid.rows * plate.grid.columns }, (_, i) => {
