@@ -31,6 +31,7 @@ const initialState = {
   activeTab: 'workflow',
   modal: null,
   modalSlotId: null,
+  pendingLabwareConfig: null,
   viewingSlotId: null,
   tempSelectedSourceWells: new Set(),
   tempSelectedDestWells: new Set(),
@@ -86,6 +87,7 @@ function saveProtocolsStore(protocols) {
 function validateVolume(state) {
   const warnings = [];
   const allWellVolumes = new Map();
+  const containerVolumes = new Map(); // slotId -> remaining volume for reservoirs/isSource
 
   state.protocolSequence.forEach((step) => {
     const { type, params } = step;
@@ -97,18 +99,37 @@ function validateVolume(state) {
 
       if (sourceSlot && sourceWells.length > 0) {
         const sourceLabware = state.deck[sourceSlot];
-        if (sourceLabware && !sourceLabware.metadata.isSource) {
-          sourceWells.forEach((wellId) => {
-            const wellKey = `${sourceSlot}-${wellId}`;
-            let currentVolume = allWellVolumes.get(wellKey) || 0;
-            if (type !== 'aspirate' && currentVolume < volumeToTransfer) {
+        if (sourceLabware) {
+          const hasDeckConfig = sourceLabware.deckConfig && sourceLabware.deckConfig.initialVolume != null;
+
+          if (!sourceLabware.metadata.isSource) {
+            // Normal wellPlate validation
+            sourceWells.forEach((wellId) => {
+              const wellKey = `${sourceSlot}-${wellId}`;
+              let currentVolume = allWellVolumes.get(wellKey) || 0;
+              if (type !== 'aspirate' && currentVolume < volumeToTransfer) {
+                warnings.push({
+                  stepId: step.id,
+                  message: `Se intentan aspirar ${volumeToTransfer}µL del pocillo ${wellId} (Bahía ${sourceSlot}), pero solo contiene ${currentVolume.toFixed(1)}µL.`,
+                });
+              }
+              allWellVolumes.set(wellKey, Math.max(0, currentVolume - volumeToTransfer));
+            });
+          } else if (hasDeckConfig) {
+            // isSource with configured initial volume (e.g. reservoir)
+            const totalToAspirate = volumeToTransfer * sourceWells.length;
+            let remaining = containerVolumes.get(sourceSlot);
+            if (remaining === undefined) remaining = sourceLabware.deckConfig.initialVolume;
+
+            if (type !== 'aspirate' && remaining < totalToAspirate) {
               warnings.push({
                 stepId: step.id,
-                message: `Se intentan aspirar ${volumeToTransfer}µL del pocillo ${wellId} (Bahía ${sourceSlot}), pero solo contiene ${currentVolume.toFixed(1)}µL.`,
+                message: `El contenedor en Bahía ${sourceSlot} no tiene suficiente líquido. Se necesitan ${totalToAspirate}µL pero solo quedan ${remaining.toFixed(1)}µL.`,
               });
             }
-            allWellVolumes.set(wellKey, Math.max(0, currentVolume - volumeToTransfer));
-          });
+            containerVolumes.set(sourceSlot, Math.max(0, remaining - totalToAspirate));
+          }
+          // else: isSource without deckConfig -> no validation (legacy behavior)
         }
       }
     }
@@ -186,6 +207,7 @@ export const useLabflowStore = create(
           state.tempSelectedSourceWells.clear();
           state.tempSelectedDestWells.clear();
         }
+        state.pendingLabwareConfig = null;
         state.modal = null;
       }),
     setViewingSlotId: (id) => set({ viewingSlotId: id }),
@@ -226,11 +248,15 @@ export const useLabflowStore = create(
       }),
 
     // ---------- Deck ----------
-    placeLabware: (slotId, labwareId) =>
+    placeLabware: (slotId, labwareId, config = null) =>
       set((state) => {
         const labware = state.labwareLibrary[labwareId];
         if (labware) {
-          state.deck[slotId] = JSON.parse(JSON.stringify(labware));
+          const copy = JSON.parse(JSON.stringify(labware));
+          if (config && config.initialVolume != null) {
+            copy.deckConfig = { initialVolume: parseFloat(config.initialVolume), hasLiquid: true };
+          }
+          state.deck[slotId] = copy;
           get().pushHistory();
         }
       }),

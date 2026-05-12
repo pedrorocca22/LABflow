@@ -1,6 +1,11 @@
-export function calculateWellVolumes(targetSlotId, sequence) {
+export function calculateWellVolumes(targetSlotId, sequence, deckConfig = null) {
   const wellVolumes = new Map();
   if (!targetSlotId) return wellVolumes;
+
+  // If the labware has an initial volume configured, seed all wells with it
+  if (deckConfig && deckConfig.initialVolume != null) {
+    wellVolumes.set('A1', deckConfig.initialVolume);
+  }
 
   sequence.forEach((step) => {
     const volumePerWell = step.params.volume || 0;

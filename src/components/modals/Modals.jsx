@@ -5,6 +5,7 @@ import LabwareEditorModal from './LabwareEditorModal';
 import ConnectionModal from './ConnectionModal';
 import SaveProtocolModal from './SaveProtocolModal';
 import CalibrationModal from './CalibrationModal';
+import DeckLabwareConfigModal from './DeckLabwareConfigModal';
 import SerialDilutionWizard from './SerialDilutionWizard';
 import ElisaWizard from './ElisaWizard';
 import AlamarBlueWizard from './AlamarBlueWizard';
@@ -23,6 +24,7 @@ export default function Modals() {
         {modal === 'connection' && <ConnectionModal />}
         {modal === 'saveProtocol' && <SaveProtocolModal />}
         {modal === 'calibration' && <CalibrationModal />}
+        {modal === 'deckLabwareConfig' && <DeckLabwareConfigModal />}
         {modal === 'serialDilutionWizard' && <SerialDilutionWizard />}
         {modal === 'elisaWizard' && <ElisaWizard />}
         {modal === 'alamarBlueWizard' && <AlamarBlueWizard />}

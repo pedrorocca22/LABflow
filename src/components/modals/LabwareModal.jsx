@@ -5,7 +5,19 @@ export default function LabwareModal() {
   const library = useLabflowStore((s) => s.labwareLibrary);
   const modalSlotId = useLabflowStore((s) => s.modalSlotId);
   const placeLabware = useLabflowStore((s) => s.placeLabware);
+  const openModal = useLabflowStore((s) => s.openModal);
   const closeModal = useLabflowStore((s) => s.closeModal);
+
+  const handleSelect = (labwareId) => {
+    const lw = library[labwareId];
+    const needsConfig = lw && (lw.metadata.displayCategory === 'reservoir' || lw.metadata.isSource);
+    if (needsConfig) {
+      openModal('deckLabwareConfig', { pendingLabwareConfig: { slotId: modalSlotId, labwareId } });
+    } else {
+      placeLabware(modalSlotId, labwareId);
+      closeModal();
+    }
+  };
 
   return (
     <div className="p-6">
@@ -20,10 +32,7 @@ export default function LabwareModal() {
         {Object.entries(library).map(([id, lw]) => (
           <button
             key={id}
-            onClick={() => {
-              placeLabware(modalSlotId, id);
-              closeModal();
-            }}
+            onClick={() => handleSelect(id)}
             className="w-full flex items-center gap-3 p-3 rounded-xl border border-surface-200 hover:border-primary-300 hover:bg-primary-50 transition-all text-left"
           >
             <Beaker className="w-5 h-5 text-primary-500 shrink-0" />
@@ -31,6 +40,11 @@ export default function LabwareModal() {
               <p className="font-medium text-surface-800">{lw.metadata.displayName}</p>
               <p className="text-xs text-surface-500">{lw.metadata.brand || 'Sin marca'} · {lw.grid.rows}×{lw.grid.columns}</p>
             </div>
+            {(lw.metadata.displayCategory === 'reservoir' || lw.metadata.isSource) && (
+              <span className="ml-auto text-[10px] font-bold uppercase tracking-wide bg-primary-100 text-primary-700 px-2 py-0.5 rounded-md">
+                Configurable
+              </span>
+            )}
           </button>
         ))}
       </div>

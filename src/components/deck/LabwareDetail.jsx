@@ -42,7 +42,7 @@ export default function LabwareDetail() {
   const activeStepIndex = protocolSequence.findIndex((s) => s.id === activeStepId);
   const sequenceToConsider =
     activeStepIndex === -1 ? protocolSequence : protocolSequence.slice(0, activeStepIndex + 1);
-  const wellVolumes = calculateWellVolumes(viewingSlotId, sequenceToConsider);
+  const wellVolumes = calculateWellVolumes(viewingSlotId, sequenceToConsider, labware.deckConfig);
 
   const wellsToHighlight =
     activeWellSelectionTarget === 'sourceWells' || activeWellSelectionTarget === 'mixWells'
@@ -81,10 +81,19 @@ export default function LabwareDetail() {
       <div className="flex-1 min-h-0 overflow-auto flex items-center justify-center">
         {isReservoir ? (
           <svg
+            ref={svgRef}
             viewBox={`0 0 ${dimensions.xDimension} ${dimensions.yDimension}`}
             className="w-full max-w-md"
-            style={{ aspectRatio: `${dimensions.xDimension} / ${dimensions.yDimension}` }}
+            style={{
+              aspectRatio: `${dimensions.xDimension} / ${dimensions.yDimension}`,
+              cursor: activeWellSelectionTarget ? 'crosshair' : 'default',
+            }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
           >
+            {/* Background */}
             <rect
               x={5}
               y={5}
@@ -94,16 +103,71 @@ export default function LabwareDetail() {
               className="fill-surface-100 stroke-surface-300"
               strokeWidth={0.5}
             />
+
+            {/* Volume bar background */}
+            <rect
+              x={10}
+              y={dimensions.yDimension - 20}
+              width={dimensions.xDimension - 20}
+              height={8}
+              rx={4}
+              className="fill-surface-200"
+            />
+            {/* Volume bar fill */}
+            {labware.deckConfig?.initialVolume != null && (
+              <rect
+                x={10}
+                y={dimensions.yDimension - 20}
+                width={Math.min(
+                  dimensions.xDimension - 20,
+                  ((dimensions.xDimension - 20) * labware.deckConfig.initialVolume) / labware.wellProperties.maxVolume
+                )}
+                height={8}
+                rx={4}
+                className="fill-primary-400"
+              />
+            )}
+
+            {/* Volume text */}
             <text
               x={dimensions.xDimension / 2}
-              y={dimensions.yDimension / 2}
+              y={dimensions.yDimension / 2 - 6}
               textAnchor="middle"
               dominantBaseline="middle"
-              className="fill-surface-600"
-              style={{ fontSize: '10px', fontWeight: 600 }}
+              className="fill-surface-700"
+              style={{ fontSize: '10px', fontWeight: 700 }}
             >
               {Math.round(wellVolumes.get('A1') || 0)} µL
             </text>
+
+            {/* Labels */}
+            <text
+              x={10}
+              y={dimensions.yDimension - 24}
+              className="fill-surface-500"
+              style={{ fontSize: '5px', fontWeight: 600 }}
+            >
+              {labware.deckConfig?.initialVolume != null
+                ? `Config: ${labware.deckConfig.initialVolume.toFixed(0)}µL / Cap: ${labware.wellProperties.maxVolume.toFixed(0)}µL`
+                : `Cap: ${labware.wellProperties.maxVolume.toFixed(0)}µL`}
+            </text>
+
+            {/* Invisible clickable overlay for well A1 selection */}
+            <rect
+              x={5}
+              y={5}
+              width={dimensions.xDimension - 10}
+              height={dimensions.yDimension - 10}
+              rx={5}
+              data-well-id="A1"
+              cx={dimensions.xDimension / 2}
+              cy={dimensions.yDimension / 2}
+              fill="transparent"
+              className={`transition-all duration-100 ${
+                wellsToHighlight.has('A1') ? 'stroke-primary-500' : 'stroke-transparent'
+              }`}
+              strokeWidth={wellsToHighlight.has('A1') ? 2 : 0}
+            />
           </svg>
         ) : hasGrid ? (
           <svg
