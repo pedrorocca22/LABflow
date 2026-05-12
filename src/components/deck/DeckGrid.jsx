@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { X, Droplets, Beaker } from 'lucide-react';
 import { useLabflowStore } from '@/stores/useLabflowStore';
 import { calculateWellVolumes } from '@/lib/protocolUtils';
+import LabwareThumbnail from './LabwareThumbnail';
 
 function getStepSlotRoles(step) {
   if (!step) return {};
@@ -21,13 +22,6 @@ const roleDot = {
   mix: 'bg-purple-500',
 };
 
-const roleLabel = {
-  source: 'Origen',
-  dest: 'Destino',
-  waste: 'Desecho',
-  mix: 'Mezcla',
-};
-
 export default function DeckGrid() {
   const deck = useLabflowStore((s) => s.deck);
   const viewingSlotId = useLabflowStore((s) => s.viewingSlotId);
@@ -43,8 +37,8 @@ export default function DeckGrid() {
   const slotRoles = useMemo(() => getStepSlotRoles(activeStep), [activeStep]);
 
   return (
-    <div>
-      <div className="grid grid-cols-3 gap-1.5">
+    <div className="h-full flex flex-col">
+      <div className="grid grid-cols-3 grid-rows-2 gap-2 h-full">
         {Object.entries(deck).map(([slotId, labware]) => {
           const isSelected = viewingSlotId === slotId;
           const role = slotRoles[slotId];
@@ -78,22 +72,22 @@ export default function DeckGrid() {
                 }
               }}
               className={`
-                group relative rounded-lg transition-all duration-150 flex flex-col items-center justify-center p-1.5
-                aspect-[3/1]
+                group relative rounded-xl transition-all duration-150 flex flex-col overflow-hidden
                 ${!labware
                   ? 'bg-surface-100 text-surface-400 hover:bg-surface-200 cursor-pointer'
                   : hasConfig
                     ? 'bg-primary-50 text-surface-800 cursor-default'
                     : 'bg-surface-100 text-surface-700 cursor-default'
                 }
-                ${isSelected && labware ? 'bg-primary-100 ring-1 ring-primary-400' : ''}
+                ${isSelected && labware ? 'ring-2 ring-primary-400' : ''}
                 ${role && !isSelected ? 'ring-1 ring-primary-300' : ''}
               `}
             >
               {labware ? (
                 <>
-                  <div className="absolute top-0.5 left-1.5 right-1.5 flex items-center justify-between">
-                    <span className="text-[8px] font-bold uppercase tracking-wider text-surface-400">
+                  {/* Top bar */}
+                  <div className="flex items-center justify-between px-2 pt-1.5 pb-0.5 shrink-0">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-surface-400">
                       B{slotId}
                     </span>
                     <button
@@ -101,22 +95,28 @@ export default function DeckGrid() {
                         e.stopPropagation();
                         removeLabware(slotId);
                       }}
-                      className="w-3.5 h-3.5 bg-surface-200 hover:bg-danger-500 hover:text-white rounded-full flex items-center justify-center shadow-sm transition-all opacity-0 group-hover:opacity-100"
+                      className="w-4 h-4 bg-surface-200 hover:bg-danger-500 hover:text-white rounded-full flex items-center justify-center shadow-sm transition-all opacity-0 group-hover:opacity-100"
                     >
                       <X className="w-2 h-2" />
                     </button>
                   </div>
 
-                  <div className="flex flex-col items-center justify-center text-center mt-1.5">
-                    <Beaker className={`w-3 h-3 mb-0.5 ${hasConfig ? 'text-primary-500' : 'text-surface-400'}`} />
-                    <span className="text-[9px] font-semibold leading-tight text-center px-1">
-                      {labware.metadata.displayName}
-                    </span>
+                  {/* Thumbnail */}
+                  <div className="flex-1 min-h-0 px-3 py-0.5 flex items-center justify-center">
+                    <LabwareThumbnail
+                      labware={labware}
+                      remainingVolumeUl={remainingVolumeUl}
+                      maxVolume={maxVolume}
+                    />
                   </div>
 
-                  <div className="absolute bottom-0.5 left-1.5 right-1.5">
+                  {/* Info footer */}
+                  <div className="px-2 pb-1.5 pt-0.5 shrink-0">
+                    <p className="text-[10px] font-semibold text-center leading-tight truncate">
+                      {labware.metadata.displayName}
+                    </p>
                     {isReservoir && hasConfig ? (
-                      <div className="space-y-0.5">
+                      <div className="mt-1">
                         <div className="w-full h-1 bg-surface-200 rounded-full overflow-hidden">
                           <div
                             className="h-full bg-primary-500 rounded-full"
@@ -125,7 +125,7 @@ export default function DeckGrid() {
                             }}
                           />
                         </div>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mt-0.5">
                           <span className="flex items-center gap-0.5 text-[8px] font-bold text-primary-700">
                             <Droplets className="w-2 h-2" />
                             {remainingVolumeMl != null ? remainingVolumeMl.toFixed(1) : configuredVolumeMl.toFixed(1)}mL
@@ -136,7 +136,7 @@ export default function DeckGrid() {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between mt-0.5">
                         <span className="text-[8px] text-surface-400">
                           {labware.metadata.displayCategory === 'wellPlate'
                             ? `${labware.grid.rows}×${labware.grid.columns}`
@@ -152,13 +152,13 @@ export default function DeckGrid() {
                   </div>
                 </>
               ) : (
-                <>
-                  <span className="text-base font-bold text-surface-300">{slotId}</span>
-                  <span className="text-[8px] text-surface-400 mt-0.5 font-medium uppercase tracking-wide">Vacía</span>
+                <div className="flex flex-col items-center justify-center h-full">
+                  <span className="text-2xl font-bold text-surface-300">{slotId}</span>
+                  <span className="text-[10px] text-surface-400 mt-0.5 font-medium uppercase tracking-wide">Vacía</span>
                   {role && (
-                    <span className={`absolute bottom-0.5 right-0.5 w-1.5 h-1.5 rounded-full ${roleDot[role]}`} title={role} />
+                    <span className={`absolute bottom-1.5 right-1.5 w-1.5 h-1.5 rounded-full ${roleDot[role]}`} title={role} />
                   )}
-                </>
+                </div>
               )}
             </div>
           );
