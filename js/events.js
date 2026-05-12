@@ -528,7 +528,11 @@ export function updateStepStateFromForm(stepId) {
         step.params.volume = parseFloat(form.elements.volume?.value);
         step.params.pipetteStrategy = form.elements.pipetteStrategy?.value;
         step.params.sourceSlot = form.elements.sourceWellsSlot?.value;
-        step.params.destSlot = form.elements.destWellsSlot?.value;
+        if (step.type === 'aspirate') {
+            step.params.destSlot = form.elements.destSlot?.value;
+        } else {
+            step.params.destSlot = form.elements.destWellsSlot?.value;
+        }
     
         if (['transfer', 'distribute', 'consolidate', 'wash'].includes(step.type)) {
             step.params.flowrate = parseFloat(form.elements.flowrate.value);

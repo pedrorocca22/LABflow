@@ -1,0 +1,9 @@
+{
+  "name": "labflow-protocol",
+  "version": "1.0.0",
+  "description": "Configurador de protocolos para robot de laboratorio",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "private": true
+}
