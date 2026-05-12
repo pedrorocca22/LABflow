@@ -66,13 +66,14 @@ export default function DeckGrid() {
             const wellVolumes = hasConfig
               ? calculateWellVolumes(slotId, protocolSequence, labware.deckConfig)
               : null;
-            const remainingVolume = wellVolumes
+            const remainingVolumeUl = wellVolumes
               ? Array.from(wellVolumes.values())[0] ?? labware.deckConfig.initialVolume
               : null;
+            const remainingVolumeMl = remainingVolumeUl != null ? remainingVolumeUl / 1000 : null;
 
             const maxVolume = labware?.wellProperties?.maxVolume || 1;
-            const configuredVolume = labware?.deckConfig?.initialVolume || 0;
-            const fillPercent = Math.min(100, (configuredVolume / maxVolume) * 100);
+            const configuredVolumeUl = labware?.deckConfig?.initialVolume || 0;
+            const configuredVolumeMl = configuredVolumeUl / 1000;
 
             return (
               <div
@@ -137,14 +138,14 @@ export default function DeckGrid() {
                             <div
                               className="h-full bg-primary-500 rounded-full"
                               style={{
-                                width: `${configuredVolume > 0 ? Math.max(4, Math.min(100, ((remainingVolume ?? configuredVolume) / configuredVolume) * 100)) : 0}%`,
+                                width: `${maxVolume > 0 && remainingVolumeUl != null ? Math.max(4, Math.min(100, (remainingVolumeUl / maxVolume) * 100)) : 0}%`,
                               }}
                             />
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="flex items-center gap-0.5 text-[9px] font-bold text-primary-700">
                               <Droplets className="w-2 h-2" />
-                              {remainingVolume != null ? remainingVolume.toFixed(0) : configuredVolume.toFixed(0)}µL
+                              {remainingVolumeMl != null ? remainingVolumeMl.toFixed(1) : configuredVolumeMl.toFixed(1)}mL
                             </span>
                             {role && (
                               <span className={`w-1.5 h-1.5 rounded-full ${roleDot[role]}`} title={role} />

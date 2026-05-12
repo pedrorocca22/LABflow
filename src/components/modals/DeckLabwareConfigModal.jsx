@@ -16,7 +16,7 @@ export default function DeckLabwareConfigModal() {
 
   const handleConfirm = () => {
     if (!slotId || !labwareId) return;
-    const config = hasLiquid && volume ? { initialVolume: parseFloat(volume) } : null;
+    const config = hasLiquid && volume ? { initialVolume: parseFloat(volume) * 1000 } : null;
     placeLabware(slotId, labwareId, config);
     closeModal();
   };
@@ -59,15 +59,15 @@ export default function DeckLabwareConfigModal() {
         {hasLiquid && (
           <div>
             <label className="block text-sm font-medium text-surface-700 mb-1">
-              Volumen inicial (µL)
+              Volumen inicial (mL)
             </label>
             <input
               type="number"
               min={0}
-              step={1}
+              step={0.1}
               value={volume}
               onChange={(e) => setVolume(e.target.value)}
-              placeholder="Ej: 15000"
+              placeholder="Ej: 15"
               className="w-full p-2.5 text-sm border border-surface-300 rounded-lg bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none"
               autoFocus
             />

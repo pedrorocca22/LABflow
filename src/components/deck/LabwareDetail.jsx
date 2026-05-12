@@ -120,7 +120,10 @@ export default function LabwareDetail() {
                 y={dimensions.yDimension - 20}
                 width={Math.min(
                   dimensions.xDimension - 20,
-                  ((dimensions.xDimension - 20) * labware.deckConfig.initialVolume) / labware.wellProperties.maxVolume
+                  Math.max(
+                    4,
+                    ((dimensions.xDimension - 20) * (wellVolumes.get('A1') || 0)) / labware.wellProperties.maxVolume
+                  )
                 )}
                 height={8}
                 rx={4}
@@ -137,7 +140,9 @@ export default function LabwareDetail() {
               className="fill-surface-700"
               style={{ fontSize: '10px', fontWeight: 700 }}
             >
-              {Math.round(wellVolumes.get('A1') || 0)} µL
+              {(wellVolumes.get('A1') || 0) >= 1000
+                ? `${((wellVolumes.get('A1') || 0) / 1000).toFixed(1)} mL`
+                : `${Math.round(wellVolumes.get('A1') || 0)} µL`}
             </text>
 
             {/* Labels */}
@@ -148,8 +153,8 @@ export default function LabwareDetail() {
               style={{ fontSize: '5px', fontWeight: 600 }}
             >
               {labware.deckConfig?.initialVolume != null
-                ? `Config: ${labware.deckConfig.initialVolume.toFixed(0)}µL / Cap: ${labware.wellProperties.maxVolume.toFixed(0)}µL`
-                : `Cap: ${labware.wellProperties.maxVolume.toFixed(0)}µL`}
+                ? `Config: ${(labware.deckConfig.initialVolume / 1000).toFixed(1)}mL / Cap: ${(labware.wellProperties.maxVolume / 1000).toFixed(1)}mL`
+                : `Cap: ${(labware.wellProperties.maxVolume / 1000).toFixed(1)}mL`}
             </text>
 
             {/* Invisible clickable overlay for well A1 selection */}
