@@ -60,8 +60,8 @@ export default function RoutineList() {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="p-4 border-b border-surface-100 flex items-center justify-between">
-        <h2 className="text-base font-semibold flex items-center gap-2 text-surface-800">
+      <div className="p-3 border-b border-surface-100 flex items-center justify-between">
+        <h2 className="text-xs font-semibold flex items-center gap-1.5 text-surface-800">
           <ListChecks className="w-5 h-5 text-primary-500" />
           Secuencia
         </h2>
@@ -81,11 +81,11 @@ export default function RoutineList() {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-2">
+      <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
         {sequence.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 text-surface-400">
             <ListPlus className="w-10 h-10 mb-3 opacity-50" />
-            <p className="text-sm font-medium">La secuencia está vacía</p>
+            <p className="text-xs font-medium">La secuencia está vacía</p>
             <p className="text-xs mt-1">Añade una acción para empezar a construir tu protocolo.</p>
           </div>
         ) : (
@@ -123,7 +123,7 @@ export default function RoutineList() {
 
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-surface-800 text-sm truncate">
+                    <p className="font-semibold text-surface-800 text-xs truncate">
                       {step.params.label || step.type}
                     </p>
                     <div className="text-xs text-surface-500 mt-1 space-y-0.5">
@@ -194,10 +194,10 @@ export default function RoutineList() {
         )}
       </div>
 
-      <div className="p-3 border-t border-surface-100 shrink-0">
+      <div className="p-2 border-t border-surface-100 shrink-0">
         <button
           onClick={() => openModal('action')}
-          className="w-full flex items-center justify-center gap-2 bg-primary-50 hover:bg-primary-100 text-primary-700 font-semibold py-2.5 px-4 rounded-lg transition-colors"
+          className="w-full flex items-center justify-center gap-1.5 bg-primary-50 hover:bg-primary-100 text-primary-700 font-semibold py-2 px-3 rounded-md transition-colors text-xs"
         >
           <Plus className="w-4 h-4" />
           Añadir Acción

@@ -19,7 +19,7 @@ export default function TabNav() {
   const setActiveTab = useLabflowStore((s) => s.setActiveTab);
 
   return (
-    <nav className="bg-surface-0 border-b border-surface-200 px-4">
+    <nav className="bg-surface-0 border-b border-surface-200 px-3">
       <div className="flex space-x-1">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -29,7 +29,7 @@ export default function TabNav() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'flex items-center gap-2 py-3 px-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
+                'flex items-center gap-1.5 py-1.5 px-2.5 text-xs font-medium border-b-2 transition-colors whitespace-nowrap',
                 isActive
                   ? 'border-primary-500 text-primary-600'
                   : 'border-transparent text-surface-500 hover:text-surface-700 hover:border-surface-300'

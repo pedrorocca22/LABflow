@@ -68,15 +68,15 @@ export default function ConfigPanel() {
   if (!activeStep) {
     return (
       <div className="h-full flex flex-col">
-        <div className="p-4 border-b border-surface-100">
-          <h2 className="text-base font-semibold flex items-center gap-2 text-surface-800">
+        <div className="p-3 border-b border-surface-100">
+          <h2 className="text-xs font-semibold flex items-center gap-2 text-surface-800">
             <SlidersHorizontal className="w-5 h-5 text-primary-500" />
             Configuración de Acción
           </h2>
         </div>
-        <div className="flex-1 flex flex-col items-center justify-center text-surface-400 p-4">
+        <div className="flex-1 flex flex-col items-center justify-center text-surface-400 p-3">
           <MousePointerClick className="w-10 h-10 mb-3 opacity-50" />
-          <p className="text-sm font-medium">Ninguna acción seleccionada</p>
+          <p className="text-xs font-medium">Ninguna acción seleccionada</p>
           <p className="text-xs mt-1">Selecciona o añade un paso en la secuencia para configurarlo.</p>
         </div>
       </div>
@@ -96,12 +96,12 @@ export default function ConfigPanel() {
     }
 
     return (
-      <div className={`p-3 rounded-lg border transition-colors ${isActive ? 'border-primary-400 bg-primary-50' : 'border-surface-200'}`}>
-        <label className="block text-sm font-medium text-surface-700 mb-2">{label}</label>
+      <div className={`p-3 rounded-lg border transition-colors mb-3 ${isActive ? 'border-primary-400 bg-primary-50' : 'border-surface-200'}`}>
+        <label className="block text-xs font-medium text-surface-700 mb-1.5">{label}</label>
         <select
           value={slotValue || ''}
           onChange={(e) => handleChange(slotField, e.target.value)}
-          className="w-full p-2 text-sm border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none mb-2"
+          className="w-full py-1 px-2 text-xs border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none mb-1.5"
         >
           <option value="">Seleccionar bahía...</option>
           {occupiedSlots.map((sid) => (
@@ -113,7 +113,7 @@ export default function ConfigPanel() {
         <button
           type="button"
           onClick={() => openWellSelector(type, slotField)}
-          className={`w-full py-2 px-3 rounded-lg text-sm font-semibold transition-colors ${
+          className={`w-full py-2 px-3 rounded-lg text-xs font-semibold transition-colors ${
             isActive
               ? 'bg-primary-600 text-white hover:bg-primary-700'
               : 'bg-surface-100 text-surface-800 hover:bg-surface-200'
@@ -127,12 +127,12 @@ export default function ConfigPanel() {
 
   const Input = ({ label, type = 'text', field, value, ...props }) => (
     <div className="mb-3">
-      <label className="block text-sm font-medium text-surface-700 mb-1">{label}</label>
+      <label className="block text-xs font-medium text-surface-700 mb-1">{label}</label>
       <input
         type={type}
         value={value ?? ''}
         onChange={(e) => handleChange(field, type === 'number' ? parseFloat(e.target.value) : e.target.value)}
-        className="w-full p-2 text-sm border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none"
+        className="w-full py-1 px-2 text-xs border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none"
         {...props}
       />
     </div>
@@ -140,11 +140,11 @@ export default function ConfigPanel() {
 
   const Select = ({ label, field, value, options }) => (
     <div className="mb-3">
-      <label className="block text-sm font-medium text-surface-700 mb-1">{label}</label>
+      <label className="block text-xs font-medium text-surface-700 mb-1">{label}</label>
       <select
         value={value || ''}
         onChange={(e) => handleChange(field, e.target.value)}
-        className="w-full p-2 text-sm border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none"
+        className="w-full py-1 px-2 text-xs border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none"
       >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -155,16 +155,16 @@ export default function ConfigPanel() {
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
-      <div className="p-4 border-b border-surface-100 shrink-0">
-        <h2 className="text-base font-semibold flex items-center gap-2 text-surface-800 capitalize">
+      <div className="p-3 border-b border-surface-100 shrink-0">
+        <h2 className="text-xs font-semibold flex items-center gap-2 text-surface-800 capitalize">
           <SlidersHorizontal className="w-5 h-5 text-primary-500" />
           Configuración: {activeStep.type}
         </h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-3">
         {warning && (
-          <div className="mb-4 p-3 bg-warning-50 border-l-4 border-warning-500 text-warning-600 text-sm rounded-r-lg">
+          <div className="mb-3 p-2 bg-warning-50 border-l-4 border-warning-500 text-warning-600 text-sm rounded-r-lg">
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
               <div>
@@ -176,23 +176,23 @@ export default function ConfigPanel() {
         )}
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-surface-700 mb-1">Etiqueta</label>
+          <label className="block text-xs font-medium text-surface-700 mb-1">Etiqueta</label>
           <input
             type="text"
             value={p.label || ''}
             onChange={(e) => handleChange('label', e.target.value)}
-            className="w-full p-2 text-sm border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none"
+            className="w-full py-1 px-2 text-xs border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none"
           />
         </div>
 
         {activeStep.type === 'comment' && (
           <div className="mb-3">
-            <label className="block text-sm font-medium text-surface-700 mb-1">Texto del Comentario</label>
+            <label className="block text-xs font-medium text-surface-700 mb-1">Texto del Comentario</label>
             <textarea
               value={p.comment || ''}
               onChange={(e) => handleChange('comment', e.target.value)}
               rows={5}
-              className="w-full p-2 text-sm border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none resize-none"
+              className="w-full py-1 px-2 text-xs border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none resize-none"
             />
           </div>
         )}
@@ -200,7 +200,7 @@ export default function ConfigPanel() {
         {activeStep.type === 'pause' && (
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 bg-surface-50 rounded-lg">
-              <span className="text-sm font-medium text-surface-700">Pausa Temporizada</span>
+              <span className="text-xs font-medium text-surface-700">Pausa Temporizada</span>
               <button
                 type="button"
                 onClick={() => handleChange('timed', !p.timed)}
@@ -217,12 +217,12 @@ export default function ConfigPanel() {
               </div>
             ) : (
               <div className="mb-3">
-                <label className="block text-sm font-medium text-surface-700 mb-1">Mensaje de Pausa Manual</label>
+                <label className="block text-xs font-medium text-surface-700 mb-1">Mensaje de Pausa Manual</label>
                 <input
                   type="text"
                   value={p.message || ''}
                   onChange={(e) => handleChange('message', e.target.value)}
-                  className="w-full p-2 text-sm border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none"
+                  className="w-full py-1 px-2 text-xs border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none"
                 />
               </div>
             )}
@@ -243,11 +243,11 @@ export default function ConfigPanel() {
             <Input label="Volumen a Aspirar (µL)" type="number" field="volume" value={p.volume} min={0.1} step={0.1} />
             <WellSelector type="sourceWells" label="Origen" slotField="sourceSlot" wellsField="sourceWells" wellsValue={p.sourceWells} />
             <div className="mb-3">
-              <label className="block text-sm font-medium text-surface-700 mb-1">Bahía de Desecho</label>
+              <label className="block text-xs font-medium text-surface-700 mb-1">Bahía de Desecho</label>
               <select
                 value={p.destSlot || ''}
                 onChange={(e) => handleChange('destSlot', e.target.value)}
-                className="w-full p-2 text-sm border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none"
+                className="w-full py-1 px-2 text-xs border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none"
               >
                 <option value="">Seleccionar bahía...</option>
                 {occupiedSlots.map((sid) => (
@@ -281,11 +281,11 @@ export default function ConfigPanel() {
               <>
                 <Input label="Ciclos" type="number" field="cycles" value={p.cycles} min={1} step={1} />
                 <div className="mb-3">
-                  <label className="block text-sm font-medium text-surface-700 mb-1">Bahía de Desecho</label>
+                  <label className="block text-xs font-medium text-surface-700 mb-1">Bahía de Desecho</label>
                   <select
                     value={p.wasteSlot || ''}
                     onChange={(e) => handleChange('wasteSlot', e.target.value)}
-                    className="w-full p-2 text-sm border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none"
+                    className="w-full py-1 px-2 text-xs border border-surface-300 rounded-md bg-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none"
                   >
                     <option value="">Seleccionar bahía...</option>
                     {occupiedSlots.map((sid) => (
@@ -299,7 +299,7 @@ export default function ConfigPanel() {
             {/* Advanced options */}
             <div className="mt-4 pt-4 border-t border-surface-200">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium text-surface-700">Opciones Avanzadas</span>
+                <span className="text-xs font-medium text-surface-700">Opciones Avanzadas</span>
                 <button
                   type="button"
                   onClick={() => handleAdvancedChange('enabled', !p.advanced?.enabled)}
@@ -359,7 +359,7 @@ export default function ConfigPanel() {
         <div className="mt-6 pt-4 border-t border-surface-200">
           <button
             onClick={() => saveStepConfig(activeStep.id)}
-            className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors shadow-sm"
+            className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-1.5 px-3 rounded-md transition-colors shadow-sm"
           >
             Guardar
           </button>

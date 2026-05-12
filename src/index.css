@@ -86,6 +86,10 @@
   --color-success-600: #86efac;
 }
 
+html {
+  font-size: 14px;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: var(--color-surface-50);

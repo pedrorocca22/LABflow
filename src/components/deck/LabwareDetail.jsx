@@ -26,7 +26,7 @@ export default function LabwareDetail() {
   if (!labware) {
     return (
       <div className="h-full flex flex-col">
-        <h2 className="text-base font-semibold mb-3 flex items-center gap-2 text-surface-800">
+        <h2 className="text-xs font-semibold mb-1.5 flex items-center gap-1.5 text-surface-800">
           <Pipette className="w-5 h-5 text-primary-500" />
           Detalle del Labware
         </h2>
@@ -62,16 +62,16 @@ export default function LabwareDetail() {
       </h2>
 
       {hasGrid && !isReservoir && (
-        <div className="flex justify-center gap-2 mb-3">
+        <div className="flex justify-center gap-2 mb-1.5">
           <button
             onClick={() => selectAllWells(labware.grid.rows, labware.grid.columns)}
-            className="text-xs bg-surface-100 hover:bg-surface-200 text-surface-700 font-semibold py-1 px-3 rounded-lg transition-colors"
+            className="text-xs bg-surface-100 hover:bg-surface-200 text-surface-700 font-semibold py-1 px-2 rounded-lg transition-colors"
           >
             Seleccionar Todos
           </button>
           <button
             onClick={deselectAllWells}
-            className="text-xs bg-surface-100 hover:bg-surface-200 text-surface-700 font-semibold py-1 px-3 rounded-lg transition-colors"
+            className="text-xs bg-surface-100 hover:bg-surface-200 text-surface-700 font-semibold py-1 px-2 rounded-lg transition-colors"
           >
             Deseleccionar Todos
           </button>
@@ -83,7 +83,7 @@ export default function LabwareDetail() {
           <svg
             ref={svgRef}
             viewBox={`0 0 ${dimensions.xDimension} ${dimensions.yDimension}`}
-            className="w-full max-w-md"
+            className="w-full max-w-xs"
             style={{
               aspectRatio: `${dimensions.xDimension} / ${dimensions.yDimension}`,
               cursor: activeWellSelectionTarget ? 'crosshair' : 'default',
@@ -178,7 +178,7 @@ export default function LabwareDetail() {
           <svg
             ref={svgRef}
             viewBox={`0 0 ${dimensions.xDimension} ${dimensions.yDimension}`}
-            className="w-full max-w-lg"
+            className="w-full max-w-sm"
             style={{ aspectRatio: `${dimensions.xDimension} / ${dimensions.yDimension}`, cursor: activeWellSelectionTarget ? 'crosshair' : 'default' }}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}

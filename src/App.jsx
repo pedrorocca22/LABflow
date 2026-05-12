@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import Header from '@/components/layout/Header';
-import TabNav from '@/components/layout/TabNav';
+import Sidebar from '@/components/layout/Sidebar';
 import WorkflowPanel from '@/components/layout/WorkflowPanel';
 import LabwareLibraryPanel from '@/components/library/LabwareLibraryPanel';
 import ProtocolGalleryPanel from '@/components/library/ProtocolGalleryPanel';
@@ -73,13 +73,15 @@ function App() {
     <div className="flex flex-col h-screen bg-surface-50 text-surface-800">
       <Toaster position="top-right" richColors closeButton />
       <Header />
-      <TabNav />
-      <main className="flex-1 overflow-hidden">
-        {activeTab === 'workflow' && <WorkflowPanel />}
-        {activeTab === 'labware' && <LabwareLibraryPanel />}
-        {activeTab === 'gallery' && <ProtocolGalleryPanel />}
-        {activeTab === 'control' && <ControlPanel />}
-      </main>
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar />
+        <main className="flex-1 overflow-hidden">
+          {activeTab === 'workflow' && <WorkflowPanel />}
+          {activeTab === 'labware' && <LabwareLibraryPanel />}
+          {activeTab === 'gallery' && <ProtocolGalleryPanel />}
+          {activeTab === 'control' && <ControlPanel />}
+        </main>
+      </div>
       <Modals />
     </div>
   );

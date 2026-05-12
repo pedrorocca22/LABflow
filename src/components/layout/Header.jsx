@@ -46,16 +46,16 @@ export default function Header() {
   const { icon: StatusIcon, color, label } = statusConfig[status] || statusConfig.disconnected;
 
   return (
-    <header className="bg-surface-900 text-white shadow-lg px-5 py-3 flex items-center justify-between animate-slide-in">
+    <header className="bg-surface-900 text-white shadow-lg px-3 py-1.5 flex items-center justify-between animate-slide-in">
       <div className="flex items-center gap-3">
         <Blocks className="w-6 h-6 text-primary-400" />
         <h1 className="text-lg font-bold tracking-tight">LABFLOW</h1>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         <button
           onClick={toggleDark}
-          className="flex items-center gap-1.5 bg-surface-700 hover:bg-surface-600 transition-colors px-3 py-1.5 rounded-lg text-sm font-medium"
+          className="flex items-center gap-1.5 bg-surface-700 hover:bg-surface-600 transition-colors px-2 py-1 rounded-md text-xs font-medium"
           title={isDark ? 'Modo claro' : 'Modo oscuro'}
         >
           {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -66,7 +66,7 @@ export default function Header() {
             if (status === 'connected') disconnect();
             else openModal('connection');
           }}
-          className="flex items-center gap-2 bg-surface-700 hover:bg-surface-600 transition-colors px-3 py-1.5 rounded-lg text-sm font-medium"
+          className="flex items-center gap-2 bg-surface-700 hover:bg-surface-600 transition-colors px-2 py-1 rounded-md text-xs font-medium"
         >
           <span className={`w-2.5 h-2.5 rounded-full ${color.replace('text-', 'bg-')}`} />
           <StatusIcon className={`w-4 h-4 ${color} ${status === 'connecting' ? 'animate-spin' : ''}`} />
@@ -93,7 +93,7 @@ export default function Header() {
 
         <button
           onClick={() => openModal('saveProtocol')}
-          className="flex items-center gap-1.5 bg-surface-700 hover:bg-surface-600 transition-colors px-3 py-1.5 rounded-lg text-sm font-medium"
+          className="flex items-center gap-1.5 bg-surface-700 hover:bg-surface-600 transition-colors px-2 py-1 rounded-md text-xs font-medium"
         >
           <Save className="w-4 h-4" />
           <span className="hidden sm:inline">Guardar</span>
@@ -120,7 +120,7 @@ export default function Header() {
             URL.revokeObjectURL(url);
             toast.success('Protocolo exportado como JSON');
           }}
-          className="flex items-center gap-1.5 bg-surface-700 hover:bg-surface-600 transition-colors px-3 py-1.5 rounded-lg text-sm font-medium"
+          className="flex items-center gap-1.5 bg-surface-700 hover:bg-surface-600 transition-colors px-2 py-1 rounded-md text-xs font-medium"
         >
           <Download className="w-4 h-4" />
           <span className="hidden sm:inline">Exportar</span>
@@ -150,7 +150,7 @@ export default function Header() {
         />
         <button
           onClick={() => document.getElementById('import-protocol-input').click()}
-          className="flex items-center gap-1.5 bg-surface-700 hover:bg-surface-600 transition-colors px-3 py-1.5 rounded-lg text-sm font-medium"
+          className="flex items-center gap-1.5 bg-surface-700 hover:bg-surface-600 transition-colors px-2 py-1 rounded-md text-xs font-medium"
         >
           <Upload className="w-4 h-4" />
           <span className="hidden sm:inline">Importar</span>
@@ -171,7 +171,7 @@ export default function Header() {
             addToKlipperQueue(gcode);
             toast.success(`Protocolo enviado a la cola de ejecución con ${gcode.length} comandos.`);
           }}
-          className="flex items-center gap-1.5 bg-primary-600 hover:bg-primary-700 transition-colors px-4 py-1.5 rounded-lg text-sm font-semibold shadow-sm"
+          className="flex items-center gap-1.5 bg-primary-600 hover:bg-primary-700 transition-colors px-3 py-1 rounded-md text-xs font-semibold shadow-sm"
         >
           <Play className="w-4 h-4" />
           <span>Ejecutar</span>
