@@ -1,4 +1,4 @@
-export default function LabwareThumbnail({ labware, remainingVolumeUl, maxVolume }) {
+export default function LabwareThumbnail({ labware, remainingVolumeUl, maxVolume, isSelectable, isSelected, onSelect }) {
   if (!labware) return null;
 
   const category = labware.metadata.displayCategory;
@@ -41,7 +41,13 @@ export default function LabwareThumbnail({ labware, remainingVolumeUl, maxVolume
         : 0;
 
     return (
-      <svg viewBox="0 0 100 60" className="w-full h-full max-h-20" preserveAspectRatio="xMidYMid meet">
+      <svg
+        viewBox="0 0 100 60"
+        className="w-full h-full max-h-20"
+        preserveAspectRatio="xMidYMid meet"
+        style={{ cursor: isSelectable ? 'pointer' : 'default' }}
+        onClick={isSelectable ? onSelect : undefined}
+      >
         <rect x={4} y={4} width={92} height={52} rx={4} className="fill-surface-200 stroke-surface-300" strokeWidth={1} />
         {fillPercent > 0 && (
           <rect
@@ -51,6 +57,32 @@ export default function LabwareThumbnail({ labware, remainingVolumeUl, maxVolume
             height={52 * fillPercent}
             rx={4}
             className="fill-primary-300"
+          />
+        )}
+        <text
+          x={50}
+          y={30}
+          textAnchor="middle"
+          dominantBaseline="central"
+          className="fill-surface-700 pointer-events-none select-none"
+          style={{ fontSize: '10px', fontWeight: 'bold' }}
+        >
+          {remainingVolumeUl != null
+            ? (remainingVolumeUl >= 1000
+                ? `${(remainingVolumeUl / 1000).toFixed(1)} mL`
+                : `${Math.round(remainingVolumeUl)} µL`)
+            : 'Vacío'}
+        </text>
+        {isSelected && (
+          <rect
+            x={2}
+            y={2}
+            width={96}
+            height={56}
+            rx={6}
+            fill="none"
+            className="stroke-primary-500"
+            strokeWidth={2.5}
           />
         )}
       </svg>

@@ -36,6 +36,10 @@ export default function DeckGrid() {
   const activeStepId = useLabflowStore((s) => s.activeStepId);
   const protocolSequence = useLabflowStore((s) => s.protocolSequence);
   const activeWellSelectionTarget = useLabflowStore((s) => s.activeWellSelectionTarget);
+  const tempSelectedSourceWells = useLabflowStore((s) => s.tempSelectedSourceWells);
+  const tempSelectedDestWells = useLabflowStore((s) => s.tempSelectedDestWells);
+  const toggleSourceWell = useLabflowStore((s) => s.toggleSourceWell);
+  const toggleDestWell = useLabflowStore((s) => s.toggleDestWell);
   const openModal = useLabflowStore((s) => s.openModal);
   const removeLabware = useLabflowStore((s) => s.removeLabware);
 
@@ -136,13 +140,25 @@ export default function DeckGrid() {
 
                   {/* Content area: thumbnail or well picker */}
                   <div className="flex-1 min-h-0 px-2 py-0.5 flex items-center justify-center overflow-hidden">
-                    {isSelectingThisSlot ? (
+                    {isSelectingThisSlot && labware.metadata.displayCategory !== 'reservoir' ? (
                       <BayWellPicker labware={labware} mode={selectionMode} />
                     ) : (
                       <LabwareThumbnail
                         labware={labware}
                         remainingVolumeUl={remainingVolumeUl}
                         maxVolume={maxVolume}
+                        isSelectable={isSelectingThisSlot && labware.metadata.displayCategory === 'reservoir'}
+                        isSelected={
+                          isSelectingThisSlot &&
+                          labware.metadata.displayCategory === 'reservoir' &&
+                          (selectionMode === 'source'
+                            ? tempSelectedSourceWells.has('A1')
+                            : tempSelectedDestWells.has('A1'))
+                        }
+                        onSelect={() => {
+                          if (selectionMode === 'source') toggleSourceWell('A1');
+                          else toggleDestWell('A1');
+                        }}
                       />
                     )}
                   </div>

@@ -161,19 +161,19 @@ export default function BayWellPicker({ labware, mode }) {
                   data-well-id={wellId}
                   className={`transition-all duration-100 ${
                     isSelected
-                      ? 'fill-primary-300 stroke-primary-700'
+                      ? 'fill-primary-400 stroke-primary-500'
                       : hasVolume
                       ? 'fill-surface-200 stroke-surface-400'
                       : 'fill-white stroke-surface-300'
                   }`}
-                  strokeWidth={isSelected ? 1.5 : 0.5}
+                  strokeWidth={0.5}
                 />
                 {hasVolume && (
                   <text
                     x={cx}
-                    y={cy + 1}
+                    y={cy}
                     textAnchor="middle"
-                    dominantBaseline="middle"
+                    dominantBaseline="central"
                     className="fill-surface-700 pointer-events-none select-none"
                     style={{ fontSize: '5px', fontWeight: 'bold' }}
                   >
