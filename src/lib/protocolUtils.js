@@ -11,9 +11,21 @@ export function calculateWellVolumes(targetSlotId, sequence, deckConfig = null) 
     const volumePerWell = step.params.volume || 0;
 
     if (step.params.sourceSlot === targetSlotId) {
+      const sLen = (step.params.sourceWells || []).length || 1;
+      const dLen = (step.params.destWells || []).length || 1;
+      let multiplier = 1;
+
+      if (step.type === 'distribute') multiplier = dLen / sLen;
+      else if (step.type === 'consolidate') multiplier = 1;
+      else if (step.type === 'wash') multiplier = (dLen / sLen) * (step.params.cycles || 1);
+      else if (step.type === 'transfer') multiplier = Math.max(sLen, dLen) / sLen;
+      else if (step.type === 'mix') multiplier = 0;
+
+      const volumeLostPerSourceWell = volumePerWell * multiplier;
+
       (step.params.sourceWells || []).forEach((wellId) => {
         const currentVolume = wellVolumes.get(wellId) || 0;
-        wellVolumes.set(wellId, Math.max(0, currentVolume - volumePerWell));
+        wellVolumes.set(wellId, Math.max(0, currentVolume - volumeLostPerSourceWell));
       });
     }
 

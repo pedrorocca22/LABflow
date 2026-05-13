@@ -102,26 +102,37 @@ function validateVolume(state) {
         if (sourceLabware) {
           const hasDeckConfig = sourceLabware.deckConfig && sourceLabware.deckConfig.initialVolume != null;
 
+          const sLen = sourceWells.length || 1;
+          const dLen = (params.destWells || []).length || 1;
+          let multiplier = 1;
+          if (type === 'distribute') multiplier = dLen / sLen;
+          else if (type === 'consolidate') multiplier = 1;
+          else if (type === 'wash') multiplier = (dLen / sLen) * (params.cycles || 1);
+          else if (type === 'transfer') multiplier = Math.max(sLen, dLen) / sLen;
+          else if (type === 'mix') multiplier = 0;
+
+          const volumeLostPerSourceWell = volumeToTransfer * multiplier;
+
           if (!sourceLabware.metadata.isSource) {
             // Normal wellPlate validation
             sourceWells.forEach((wellId) => {
               const wellKey = `${sourceSlot}-${wellId}`;
               let currentVolume = allWellVolumes.get(wellKey) || 0;
-              if (type !== 'aspirate' && currentVolume < volumeToTransfer) {
+              if (type !== 'aspirate' && type !== 'mix' && currentVolume < volumeLostPerSourceWell) {
                 warnings.push({
                   stepId: step.id,
-                  message: `Se intentan aspirar ${volumeToTransfer}µL del pocillo ${wellId} (Bahía ${sourceSlot}), pero solo contiene ${currentVolume.toFixed(1)}µL.`,
+                  message: `Se intentan aspirar ${volumeLostPerSourceWell}µL del pocillo ${wellId} (Bahía ${sourceSlot}), pero solo contiene ${currentVolume.toFixed(1)}µL.`,
                 });
               }
-              allWellVolumes.set(wellKey, Math.max(0, currentVolume - volumeToTransfer));
+              allWellVolumes.set(wellKey, Math.max(0, currentVolume - volumeLostPerSourceWell));
             });
           } else if (hasDeckConfig) {
             // isSource with configured initial volume (e.g. reservoir)
-            const totalToAspirate = volumeToTransfer * sourceWells.length;
+            const totalToAspirate = volumeLostPerSourceWell * sourceWells.length;
             let remaining = containerVolumes.get(sourceSlot);
             if (remaining === undefined) remaining = sourceLabware.deckConfig.initialVolume;
 
-            if (type !== 'aspirate' && remaining < totalToAspirate) {
+            if (type !== 'aspirate' && type !== 'mix' && remaining < totalToAspirate) {
               warnings.push({
                 stepId: step.id,
                 message: `El contenedor en Bahía ${sourceSlot} no tiene suficiente líquido. Se necesitan ${totalToAspirate}µL pero solo quedan ${remaining.toFixed(1)}µL.`,

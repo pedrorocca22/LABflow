@@ -72,6 +72,7 @@ export default function DeckGrid() {
   const toggleDestWell          = useLabflowStore((s) => s.toggleDestWell);
   const openModal               = useLabflowStore((s) => s.openModal);
   const removeLabware           = useLabflowStore((s) => s.removeLabware);
+  const setViewingSlotId        = useLabflowStore((s) => s.setViewingSlotId);
 
   const activeStep = useMemo(
     () => protocolSequence.find((s) => s.id === activeStepId),
@@ -148,10 +149,11 @@ export default function DeckGrid() {
               key={slotId}
               className={`
                 group relative rounded-xl flex flex-col overflow-hidden
-                border border-surface-100
-                transition-shadow duration-150
+                border border-surface-200 hover:border-blue-400
+                transition-all duration-150 cursor-pointer
                 ${bgClass} ${ringClass}
               `}
+              onClick={() => setViewingSlotId(slotId)}
             >
               {/* ── Top bar ── */}
               <div className="flex items-center justify-between px-2.5 pt-2 pb-1 shrink-0">
