@@ -1,6 +1,7 @@
 import { useMemo, useCallback } from 'react';
 import { SlidersHorizontal, AlertTriangle, MousePointerClick } from 'lucide-react';
 import { useLabflowStore } from '@/stores/useLabflowStore';
+import { CheckSquare, Square } from 'lucide-react';
 
 export default function ConfigPanel() {
   const activeStepId = useLabflowStore((s) => s.activeStepId);
@@ -14,6 +15,8 @@ export default function ConfigPanel() {
   const activeWellSelectionTarget = useLabflowStore((s) => s.activeWellSelectionTarget);
   const tempSelectedSourceWells = useLabflowStore((s) => s.tempSelectedSourceWells);
   const tempSelectedDestWells = useLabflowStore((s) => s.tempSelectedDestWells);
+  const selectAllWells = useLabflowStore((s) => s.selectAllWells);
+  const deselectAllWells = useLabflowStore((s) => s.deselectAllWells);
 
   const activeStep = useMemo(
     () => protocolSequence.find((s) => s.id === activeStepId),
@@ -85,7 +88,7 @@ export default function ConfigPanel() {
 
   const p = activeStep.params;
 
-  const WellSelector = ({ type, label, slotField, wellsField, wellsValue }) => {
+  const WellSelector = ({ type, label, slotField, wellsValue }) => {
     const slotValue = p[slotField];
     const isActive = activeWellSelectionTarget === type;
     let count = (wellsValue || []).length;
@@ -94,6 +97,7 @@ export default function ConfigPanel() {
         ? tempSelectedSourceWells.size
         : tempSelectedDestWells.size;
     }
+    const labwareForSelection = slotValue ? deck[slotValue] : null;
 
     return (
       <div className={`p-3 rounded-lg border transition-colors mb-3 ${isActive ? 'border-primary-400 bg-primary-50' : 'border-surface-200'}`}>
@@ -121,6 +125,26 @@ export default function ConfigPanel() {
         >
           Seleccionar Pocillos ({count})
         </button>
+        {isActive && labwareForSelection?.grid && (
+          <div className="flex gap-2 mt-2">
+            <button
+              type="button"
+              onClick={() => selectAllWells(labwareForSelection.grid.rows, labwareForSelection.grid.columns)}
+              className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-[10px] font-semibold bg-surface-100 hover:bg-surface-200 text-surface-700 transition-colors"
+            >
+              <CheckSquare className="w-3 h-3" />
+              Todos
+            </button>
+            <button
+              type="button"
+              onClick={deselectAllWells}
+              className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-[10px] font-semibold bg-surface-100 hover:bg-surface-200 text-surface-700 transition-colors"
+            >
+              <Square className="w-3 h-3" />
+              Ninguno
+            </button>
+          </div>
+        )}
       </div>
     );
   };
@@ -231,7 +255,7 @@ export default function ConfigPanel() {
 
         {activeStep.type === 'mix' && (
           <>
-            <WellSelector type="mixWells" label="Ubicación" slotField="mixSlot" wellsField="mixWells" wellsValue={p.mixWells} />
+            <WellSelector type="mixWells" label="Ubicación" slotField="mixSlot" wellsValue={p.mixWells} />
             <Input label="Repeticiones" type="number" field="repetitions" value={p.repetitions} min={1} step={1} />
             <Input label="Volumen de Mezcla (µL)" type="number" field="volume" value={p.volume} min={1} step={0.1} />
             <Input label="Flow Rate (µL/s)" type="number" field="flowrate" value={p.flowrate} placeholder="150" />
@@ -241,7 +265,7 @@ export default function ConfigPanel() {
         {activeStep.type === 'aspirate' && (
           <>
             <Input label="Volumen a Aspirar (µL)" type="number" field="volume" value={p.volume} min={0.1} step={0.1} />
-            <WellSelector type="sourceWells" label="Origen" slotField="sourceSlot" wellsField="sourceWells" wellsValue={p.sourceWells} />
+            <WellSelector type="sourceWells" label="Origen" slotField="sourceSlot" wellsValue={p.sourceWells} />
             <div className="mb-3">
               <label className="block text-xs font-medium text-surface-700 mb-1">Bahía de Desecho</label>
               <select
@@ -268,8 +292,8 @@ export default function ConfigPanel() {
           <>
             <Input label="Volumen (µL)" type="number" field="volume" value={p.volume} min={0.1} step={0.1} />
             <Input label="Flow Rate (µL/s)" type="number" field="flowrate" value={p.flowrate || 100} placeholder="Min: 25, Max: 300" />
-            <WellSelector type="sourceWells" label="Origen" slotField="sourceSlot" wellsField="sourceWells" wellsValue={p.sourceWells} />
-            <WellSelector type="destWells" label="Destino" slotField="destSlot" wellsField="destWells" wellsValue={p.destWells} />
+            <WellSelector type="sourceWells" label="Origen" slotField="sourceSlot" wellsValue={p.sourceWells} />
+            <WellSelector type="destWells" label="Destino" slotField="destSlot" wellsValue={p.destWells} />
             <Select
               label="Estrategia de Pipeteo"
               field="pipetteStrategy"

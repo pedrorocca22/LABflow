@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
-import { X, Droplets, Beaker } from 'lucide-react';
+import { X, Droplets } from 'lucide-react';
 import { useLabflowStore } from '@/stores/useLabflowStore';
 import { calculateWellVolumes } from '@/lib/protocolUtils';
 import LabwareThumbnail from './LabwareThumbnail';
+import BayWellPicker from './BayWellPicker';
 
 function getStepSlotRoles(step) {
   if (!step) return {};
@@ -22,11 +23,19 @@ const roleDot = {
   mix: 'bg-purple-500',
 };
 
+const roleLabel = {
+  source: 'ORIGEN',
+  dest: 'DESTINO',
+  waste: 'DESECHO',
+  mix: 'MIX',
+};
+
 export default function DeckGrid() {
   const deck = useLabflowStore((s) => s.deck);
   const viewingSlotId = useLabflowStore((s) => s.viewingSlotId);
   const activeStepId = useLabflowStore((s) => s.activeStepId);
   const protocolSequence = useLabflowStore((s) => s.protocolSequence);
+  const activeWellSelectionTarget = useLabflowStore((s) => s.activeWellSelectionTarget);
   const openModal = useLabflowStore((s) => s.openModal);
   const removeLabware = useLabflowStore((s) => s.removeLabware);
 
@@ -36,9 +45,23 @@ export default function DeckGrid() {
   );
   const slotRoles = useMemo(() => getStepSlotRoles(activeStep), [activeStep]);
 
+  const selectingSlotId = useMemo(() => {
+    if (!activeStep || !activeWellSelectionTarget) return null;
+    if (activeWellSelectionTarget === 'destWells') return activeStep.params.destSlot || null;
+    if (activeWellSelectionTarget === 'sourceWells') return activeStep.params.sourceSlot || null;
+    if (activeWellSelectionTarget === 'mixWells') return activeStep.params.mixSlot || null;
+    return null;
+  }, [activeStep, activeWellSelectionTarget]);
+
+  const selectionMode = useMemo(() => {
+    if (!activeWellSelectionTarget) return null;
+    if (activeWellSelectionTarget === 'destWells') return 'dest';
+    return 'source';
+  }, [activeWellSelectionTarget]);
+
   return (
     <div className="h-full flex flex-col">
-      <div className="grid grid-cols-3 grid-rows-2 gap-2 h-full">
+      <div className="grid grid-cols-3 grid-rows-2 gap-3 h-full p-1">
         {Object.entries(deck).map(([slotId, labware]) => {
           const isSelected = viewingSlotId === slotId;
           const role = slotRoles[slotId];
@@ -55,6 +78,8 @@ export default function DeckGrid() {
           const maxVolume = labware?.wellProperties?.maxVolume || 1;
           const configuredVolumeUl = labware?.deckConfig?.initialVolume || 0;
           const configuredVolumeMl = configuredVolumeUl / 1000;
+
+          const isSelectingThisSlot = selectingSlotId === slotId && selectionMode != null;
 
           return (
             <div
@@ -81,15 +106,23 @@ export default function DeckGrid() {
                 }
                 ${isSelected && labware ? 'ring-2 ring-primary-400' : ''}
                 ${role && !isSelected ? 'ring-1 ring-primary-300' : ''}
+                ${isSelectingThisSlot ? 'ring-2 ring-primary-500 shadow-md' : ''}
               `}
             >
               {labware ? (
                 <>
                   {/* Top bar */}
                   <div className="flex items-center justify-between px-2 pt-1.5 pb-0.5 shrink-0">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-surface-400">
-                      B{slotId}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-surface-400">
+                        B{slotId}
+                      </span>
+                      {role && (
+                        <span className={`text-[8px] font-bold px-1 py-0.5 rounded text-white ${roleDot[role]}`}>
+                          {roleLabel[role]}
+                        </span>
+                      )}
+                    </div>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -101,13 +134,17 @@ export default function DeckGrid() {
                     </button>
                   </div>
 
-                  {/* Thumbnail */}
-                  <div className="flex-1 min-h-0 px-3 py-0.5 flex items-center justify-center">
-                    <LabwareThumbnail
-                      labware={labware}
-                      remainingVolumeUl={remainingVolumeUl}
-                      maxVolume={maxVolume}
-                    />
+                  {/* Content area: thumbnail or well picker */}
+                  <div className="flex-1 min-h-0 px-2 py-0.5 flex items-center justify-center overflow-hidden">
+                    {isSelectingThisSlot ? (
+                      <BayWellPicker labware={labware} mode={selectionMode} />
+                    ) : (
+                      <LabwareThumbnail
+                        labware={labware}
+                        remainingVolumeUl={remainingVolumeUl}
+                        maxVolume={maxVolume}
+                      />
+                    )}
                   </div>
 
                   {/* Info footer */}
