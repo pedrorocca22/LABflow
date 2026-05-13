@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Blocks, Undo2, Redo2, Save, Play, Wifi, WifiOff, Loader2, Download, Upload, Sun, Moon } from 'lucide-react';
+import { Droplet, Undo2, Redo2, Save, Play, Wifi, WifiOff, Loader2, Download, Upload, Sun, Moon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLabflowStore } from '@/stores/useLabflowStore';
 import { generateGcodeForSequence } from '@/lib/protocolUtils';
@@ -46,7 +46,12 @@ export default function Header() {
   const { icon: StatusIcon, color, label } = statusConfig[status] || statusConfig.disconnected;
 
   return (
-    <header className="bg-surface-900 text-white shadow-lg px-3 py-3 flex items-center justify-end animate-slide-in">
+    <header className="bg-surface-900 text-white shadow-lg px-4 py-4 flex items-center justify-between animate-slide-in">
+      <div className="flex items-center gap-2.5 pl-2">
+        <Droplet className="w-7 h-7 text-primary-500 fill-primary-500" />
+        <h1 className="text-3xl tracking-wide text-white" style={{ fontFamily: "'Madimi One', sans-serif" }}>LABFLOW</h1>
+      </div>
+
       <div className="flex items-center gap-2">
         <button
           onClick={toggleDark}
