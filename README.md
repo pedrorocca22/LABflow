@@ -1,56 +1,58 @@
 # Labflow
 
-Labflow es una plataforma web avanzada diseñada para la orquestación, simulación y ejecución de protocolos de manejo de líquidos (liquid handling) en entornos de laboratorio automatizados. Con un enfoque profundo en la precisión matemática y eficiencia, Labflow elimina la fricción de programar rutinas complejas para robots pipeteadores, ofreciendo un entorno automatizado y altamente interactivo.
+> **Disclaimer: This software is currently a beta version and is still under active development. Features and performance are subject to change.**
 
-## ✨ Capacidades y Bondades del Sistema
+Labflow is an advanced web platform designed for the orchestration, simulation, and execution of liquid handling protocols in automated laboratory environments. With a deep focus on mathematical precision and efficiency, Labflow eliminates the friction of programming complex routines for pipetting robots, offering a highly interactive and automated environment.
 
-### 🧪 Configuración Dinámica del *Deck*
-* **Gestor de Bahías Espacial:** Interfaz gráfica interactiva para disponer instrumental en un tablero de 6 bahías.
-* **Soporte Universal de Labware:** Soporte nativo para microplacas (ej. 96 pocillos), reservorios de reactivos y cajas de puntas (*TipRacks*), estandarizados para un posicionamiento preciso.
-* **Selección Matricial Avanzada:** Configuración de pocillos uno a uno o mediante una selección de "lazo" por arrastre, permitiendo delinear patrones completos de pipeteo en segundos.
+## ✨ System Capabilities and Features
 
-### 🤖 Asistentes Automatizados (Wizards)
-El sistema incluye flujos de trabajo pre-programados (wizards) orientados a acelerar la creación de protocolos de laboratorio altamente estandarizados sin requerir configuración manual paso a paso:
-* **Ensayo ELISA:** Automatiza las adiciones de antígenos, bloqueos, lavados sucesivos y lectura de sustratos.
-* **AlamarBlue:** Preconfigura rutinas de viabilidad celular y dosificación de fluoróforos.
-* **Diluciones Seriadas:** Asistente matemático para propagar concentraciones a través de una placa de forma paramétrica.
+### 🧪 Dynamic Deck Configuration
+* **Spatial Bay Manager:** Interactive graphical interface to arrange instruments on a 6-bay deck grid.
+* **Universal Labware Support:** Native support for microplates (e.g., 96-well), reagent reservoirs, and TipRacks, standardized for precise positioning.
+* **Advanced Matrix Selection:** Configure wells individually or using a drag-and-drop "lasso" selection, allowing the outlining of complete pipetting patterns in seconds.
 
-### 🧬 Motor de Protocolos Inteligente
-* **Simulador Matemático de Fluidos:** Calcula el volumen de líquido en cada pocillo y reservorio en *tiempo real* conforme avanzan los pasos del protocolo, alertando predictivamente de falta de reactivos o desbordamientos.
-* **Secuenciador Visual de Pasos:** Flujo de trabajo estructurado para ordenar y editar parámetros lógicos.
-* **Operaciones Primitivas Completas:** Control atómico sobre todas las acciones posibles del robot:
-  * **Transfer (Transferir):** Movimiento de volumen 1 a 1.
-  * **Distribute (Distribuir):** Dosificación de 1 origen a N destinos.
-  * **Consolidate (Consolidar):** Agrupación de N orígenes a 1 destino.
-  * **Aspirate (Aspirar):** Extracción para desechos.
-  * **Wash (Lavar):** Ciclos automatizados de adición y remoción.
-  * **Mix (Mezclar):** Repeticiones de aspiración/dispensación en un mismo pocillo.
-  * **Pause (Pausa):** Detención temporal del sistema por tiempo cronometrado o hasta confirmación manual del usuario.
-  * **Comment (Comentario):** Notas textuales inyectadas en la secuencia.
+### 🤖 Automated Assistants (Wizards)
+The system includes pre-programmed workflows (wizards) aimed at accelerating the creation of highly standardized laboratory protocols without requiring step-by-step manual configuration:
+* **ELISA Assay:** Automates antigen additions, blocking, successive washes, and substrate reading.
+* **AlamarBlue:** Preconfigures cell viability routines and fluorophore dosing.
+* **Serial Dilutions:** Mathematical assistant to parametrically propagate concentrations across a plate.
 
-### ⚙️ Generación de G-Code y Control Directo
-* **Traductor Cinemático:** Convierte automáticamente la secuencia de pasos lógicos en trayectorias de G-Code estandarizadas.
-* **Integración Nativa (Klipper-ready):** Capacidad de conectarse directamente a un firmware de control de impresoras 3D o robots (como Klipper) para la inyección directa y remota de los comandos generados.
-* **Exportación JSON:** Capacidad de almacenar y compartir protocolos lógicos en formato portátil.
+### 🧬 Intelligent Protocol Engine
+* **Mathematical Fluid Simulator:** Calculates the liquid volume in each well and reservoir in *real-time* as the protocol steps progress, predictively alerting about reagent shortages or overflows.
+* **Visual Step Sequencer:** Structured workflow to organize and edit logical parameters.
+* **Complete Primitive Operations:** Atomic control over all possible robot actions:
+  * **Transfer:** 1-to-1 volume movement.
+  * **Distribute:** Dosing from 1 source to N destinations.
+  * **Consolidate:** Grouping from N sources to 1 destination.
+  * **Aspirate:** Extraction for waste disposal.
+  * **Wash:** Automated cycles of addition and removal.
+  * **Mix:** Repeated aspiration/dispensation cycles in the same well.
+  * **Pause:** Temporary system halt by a timer or until manual user confirmation.
+  * **Comment:** Text notes injected into the sequence.
 
-## 🚀 Arquitectura y Tecnologías
-Este sistema es completamente agnóstico al hardware subyacente de los motores, focalizándose puramente en la lógica de automatización y la interfaz de control:
+### ⚙️ G-Code Generation and Direct Control
+* **Kinematic Translator:** Automatically converts the sequence of logical steps into standardized G-Code toolpaths.
+* **Native Integration (Klipper-ready):** Ability to connect directly to 3D printer or robot control firmware (such as Klipper) for the direct and remote injection of generated commands.
+* **JSON Export:** Ability to store and share logical protocols in a portable format.
+
+## 🚀 Architecture and Technologies
+This system is completely agnostic to the underlying hardware of the motors, focusing purely on automation logic and the control interface:
 
 - **Frontend:** React + Vite
-- **Estado Global:** Zustand (Gestión inmutable y ultra-rápida de las simulaciones matemáticas).
-- **Estilos:** Tailwind CSS
+- **Global State:** Zustand (Immutable and ultra-fast management of mathematical simulations).
+- **Styling:** Tailwind CSS
 
-## 📦 Instalación y Desarrollo Local
+## 📦 Installation and Local Development
 
-Para desplegar Labflow de forma local en modo de desarrollo:
+To deploy Labflow locally in development mode:
 
-1. **Clona el repositorio** y entra en la carpeta del proyecto.
-2. **Instala las dependencias**:
+1. **Clone the repository** and navigate to the project folder.
+2. **Install dependencies**:
    ```bash
    npm install
    ```
-3. **Inicia el servidor de desarrollo**:
+3. **Start the development server**:
    ```bash
    npm run dev
    ```
-4. Navega a la URL local (por defecto `http://localhost:5173`) en tu navegador web.
+4. Navigate to the local URL (default `http://localhost:5173`) in your web browser.
