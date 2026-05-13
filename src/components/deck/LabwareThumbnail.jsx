@@ -37,51 +37,67 @@ export default function LabwareThumbnail({ labware, remainingVolumeUl, maxVolume
   if (category === 'reservoir') {
     const fillPercent =
       remainingVolumeUl != null && maxVolume > 0
-        ? Math.max(0.05, Math.min(1, remainingVolumeUl / maxVolume))
+        ? Math.max(0, Math.min(1, remainingVolumeUl / maxVolume))
         : 0;
+    const percentText = Math.round(fillPercent * 100);
+    const volumeText = remainingVolumeUl != null
+      ? (remainingVolumeUl >= 1000
+          ? `${(remainingVolumeUl / 1000).toFixed(1)} mL`
+          : `${Math.round(remainingVolumeUl)} µL`)
+      : 'Vacío';
 
     return (
       <svg
-        viewBox="0 0 100 60"
-        className="w-full h-full max-h-20"
+        viewBox="0 0 100 70"
+        className="w-full h-full"
         preserveAspectRatio="xMidYMid meet"
         style={{ cursor: isSelectable ? 'pointer' : 'default' }}
         onClick={isSelectable ? onSelect : undefined}
       >
-        <rect x={4} y={4} width={92} height={52} rx={4} className="fill-surface-200 stroke-surface-300" strokeWidth={1} />
-        {fillPercent > 0 && (
-          <rect
-            x={4}
-            y={4 + 52 * (1 - fillPercent)}
-            width={92}
-            height={52 * fillPercent}
-            rx={4}
-            className="fill-primary-300"
-          />
-        )}
+        {/* Background */}
+        <rect
+          x={4}
+          y={4}
+          width={92}
+          height={62}
+          rx={8}
+          className="fill-primary-500"
+        />
+
+        {/* Percentage - large, centered, white */}
         <text
           x={50}
           y={30}
           textAnchor="middle"
           dominantBaseline="central"
-          className="fill-surface-700 pointer-events-none select-none"
-          style={{ fontSize: '10px', fontWeight: 'bold' }}
+          className="fill-white pointer-events-none select-none"
+          style={{ fontSize: '24px', fontWeight: 800 }}
         >
-          {remainingVolumeUl != null
-            ? (remainingVolumeUl >= 1000
-                ? `${(remainingVolumeUl / 1000).toFixed(1)} mL`
-                : `${Math.round(remainingVolumeUl)} µL`)
-            : 'Vacío'}
+          {percentText}%
         </text>
+
+        {/* Volume - smaller, below, white */}
+        <text
+          x={50}
+          y={50}
+          textAnchor="middle"
+          dominantBaseline="central"
+          className="fill-white/90 pointer-events-none select-none"
+          style={{ fontSize: '10px', fontWeight: 600 }}
+        >
+          {volumeText}
+        </text>
+
+        {/* Selection ring */}
         {isSelected && (
           <rect
             x={2}
             y={2}
             width={96}
-            height={56}
-            rx={6}
+            height={66}
+            rx={10}
             fill="none"
-            className="stroke-primary-500"
+            className="stroke-white"
             strokeWidth={2.5}
           />
         )}

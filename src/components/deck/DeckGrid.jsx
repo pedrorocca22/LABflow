@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { X, Droplets } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useLabflowStore } from '@/stores/useLabflowStore';
 import { calculateWellVolumes } from '@/lib/protocolUtils';
 import LabwareThumbnail from './LabwareThumbnail';
@@ -168,25 +168,12 @@ export default function DeckGrid() {
                     <p className="text-[10px] font-semibold text-center leading-tight truncate">
                       {labware.metadata.displayName}
                     </p>
-                    {isReservoir && hasConfig ? (
-                      <div className="mt-1">
-                        <div className="w-full h-1 bg-surface-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-primary-500 rounded-full"
-                            style={{
-                              width: `${maxVolume > 0 && remainingVolumeUl != null ? Math.max(4, Math.min(100, (remainingVolumeUl / maxVolume) * 100)) : 0}%`,
-                            }}
-                          />
-                        </div>
-                        <div className="flex items-center justify-between mt-0.5">
-                          <span className="flex items-center gap-0.5 text-[8px] font-bold text-primary-700">
-                            <Droplets className="w-2 h-2" />
-                            {remainingVolumeMl != null ? remainingVolumeMl.toFixed(1) : configuredVolumeMl.toFixed(1)}mL
-                          </span>
-                          {role && (
-                            <span className={`w-1.5 h-1.5 rounded-full ${roleDot[role]}`} title={role} />
-                          )}
-                        </div>
+                    {isReservoir ? (
+                      <div className="flex items-center justify-between mt-0.5">
+                        <span className="text-[8px] text-surface-400">Reservorio</span>
+                        {role && (
+                          <span className={`w-1.5 h-1.5 rounded-full ${roleDot[role]}`} title={role} />
+                        )}
                       </div>
                     ) : (
                       <div className="flex items-center justify-between mt-0.5">
