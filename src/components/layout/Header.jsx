@@ -46,13 +46,8 @@ export default function Header() {
   const { icon: StatusIcon, color, label } = statusConfig[status] || statusConfig.disconnected;
 
   return (
-    <header className="bg-surface-900 text-white shadow-lg px-3 py-1.5 flex items-center justify-between animate-slide-in">
-      <div className="flex items-center gap-3">
-        <Blocks className="w-6 h-6 text-primary-400" />
-        <h1 className="text-lg font-bold tracking-tight">LABFLOW</h1>
-      </div>
-
-      <div className="flex items-center gap-1">
+    <header className="bg-surface-900 text-white shadow-lg px-3 py-3 flex items-center justify-end animate-slide-in">
+      <div className="flex items-center gap-2">
         <button
           onClick={toggleDark}
           className="flex items-center gap-1.5 bg-surface-700 hover:bg-surface-600 transition-colors px-2 py-1 rounded-md text-xs font-medium"

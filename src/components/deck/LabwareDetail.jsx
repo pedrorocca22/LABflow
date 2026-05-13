@@ -26,14 +26,14 @@ export default function LabwareDetail() {
   if (!labware) {
     return (
       <div className="h-full flex flex-col">
-        <h2 className="text-xs font-semibold mb-1.5 flex items-center gap-1.5 text-surface-800">
+        <h2 className="text-sm font-semibold mb-1.5 flex items-center gap-1.5 text-surface-800">
           <Pipette className="w-5 h-5 text-primary-500" />
           Detalle del Labware
         </h2>
         <div className="flex-1 flex flex-col items-center justify-center text-surface-400">
           <Microscope className="w-10 h-10 mb-3 opacity-50" />
-          <p className="text-sm font-medium">Ningún labware seleccionado</p>
-          <p className="text-xs mt-1">Selecciona un paso que use una bahía para visualizar sus pocillos.</p>
+          <p className="text-base font-medium">Ningún labware seleccionado</p>
+          <p className="text-sm mt-1">Selecciona un paso que use una bahía para visualizar sus pocillos.</p>
         </div>
       </div>
     );
@@ -65,13 +65,13 @@ export default function LabwareDetail() {
         <div className="flex justify-center gap-2 mb-1.5">
           <button
             onClick={() => selectAllWells(labware.grid.rows, labware.grid.columns)}
-            className="text-xs bg-surface-100 hover:bg-surface-200 text-surface-700 font-semibold py-1 px-2 rounded-lg transition-colors"
+            className="text-sm bg-surface-100 hover:bg-surface-200 text-surface-700 font-semibold py-1 px-2 rounded-lg transition-colors"
           >
             Seleccionar Todos
           </button>
           <button
             onClick={deselectAllWells}
-            className="text-xs bg-surface-100 hover:bg-surface-200 text-surface-700 font-semibold py-1 px-2 rounded-lg transition-colors"
+            className="text-sm bg-surface-100 hover:bg-surface-200 text-surface-700 font-semibold py-1 px-2 rounded-lg transition-colors"
           >
             Deseleccionar Todos
           </button>
@@ -273,7 +273,7 @@ export default function LabwareDetail() {
         ) : (
           <div className="text-center text-surface-500">
             <p className="font-medium">{labware.metadata.displayName}</p>
-            <p className="text-sm">Este labware no tiene una rejilla visualizable.</p>
+            <p className="text-base">Este labware no tiene una rejilla visualizable.</p>
           </div>
         )}
       </div>

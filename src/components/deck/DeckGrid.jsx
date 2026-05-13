@@ -43,10 +43,10 @@ function EmptyBayCell({ slotId, role, onClick, onKeyDown }) {
         cursor-pointer transition-all duration-150
       "
     >
-      <span className="text-[22px] font-semibold text-surface-200 group-hover:text-surface-300 transition-colors">
+      <span className="text-2xl font-semibold text-surface-200 group-hover:text-surface-300 transition-colors">
         {slotId}
       </span>
-      <span className="text-[9px] font-medium tracking-widest uppercase text-surface-300 group-hover:text-surface-400 mt-0.5 transition-colors">
+      <span className="text-[11px] font-medium tracking-widest uppercase text-surface-300 group-hover:text-surface-400 mt-0.5 transition-colors">
         vacía
       </span>
       {roleStyle && (
@@ -158,12 +158,12 @@ export default function DeckGrid() {
               {/* ── Top bar ── */}
               <div className="flex items-center justify-between px-2.5 pt-2 pb-1 shrink-0">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] font-semibold tracking-widest uppercase text-surface-400">
+                  <span className="text-xs font-semibold tracking-widest uppercase text-surface-400">
                     B{slotId}
                   </span>
                   {roleStyle && (
                     <span
-                      className={`text-[8px] font-bold px-1.5 py-0.5 rounded-sm text-white tracking-wider ${roleStyle.bg}`}
+                      className={`text-[10px] font-bold px-1.5 py-0.5 rounded-sm text-white tracking-wider ${roleStyle.bg}`}
                     >
                       {roleStyle.text}
                     </span>
@@ -213,7 +213,7 @@ export default function DeckGrid() {
               <div className="px-2.5 pb-2 pt-0.5 shrink-0 space-y-1.5">
                 {/* Labware name */}
                 <div className="flex items-center justify-between gap-1">
-                  <p className="text-[10px] font-normal text-surface-400 truncate leading-tight">
+                  <p className="text-xs font-normal text-surface-400 truncate leading-tight">
                     {labware.metadata.displayName}
                   </p>
                 </div>

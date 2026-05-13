@@ -46,16 +46,16 @@ const StepNode = memo(({ data }) => {
 
       <div className="px-2 py-1.5">
         <div className="flex items-center gap-1">
-          <p className="text-[10px] font-bold text-surface-800 truncate flex-1">{label}</p>
+          <p className="text-xs font-bold text-surface-800 truncate flex-1">{label}</p>
           {hasWarning && (
             <AlertTriangle className="w-3 h-3 text-warning-500 shrink-0" title="Advertencia" />
           )}
         </div>
         {volume != null && (
-          <p className="text-[9px] text-surface-500 mt-0.5">{volume} µL</p>
+          <p className="text-[10px] text-surface-500 mt-0.5">{volume} µL</p>
         )}
         {(sourceSlot || destSlot) && (
-          <p className="text-[8px] text-surface-400 mt-0.5 truncate">
+          <p className="text-[9px] text-surface-400 mt-0.5 truncate">
             {sourceSlot ? `B${sourceSlot}` : ''}
             {sourceSlot && destSlot ? ' → ' : ''}
             {destSlot ? `B${destSlot}` : ''}
