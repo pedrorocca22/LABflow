@@ -19,6 +19,9 @@ The system includes pre-programmed workflows (wizards) aimed at accelerating the
 * **AlamarBlue:** Preconfigures cell viability routines and fluorophore dosing.
 * **Serial Dilutions:** Mathematical assistant to parametrically propagate concentrations across a plate.
 
+<img width="1916" height="917" alt="Labflow2" src="https://github.com/user-attachments/assets/987df36c-6474-4aa2-b9b9-fa5ec724c4a8" />
+  
+
 ###  Intelligent Protocol Engine
 * **Mathematical Fluid Simulator:** Calculates the liquid volume in each well and reservoir in *real-time* as the protocol steps progress, predictively alerting about reagent shortages or overflows.
 * **Visual Step Sequencer:** Structured workflow to organize and edit logical parameters.
