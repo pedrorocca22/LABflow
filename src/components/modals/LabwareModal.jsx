@@ -10,7 +10,7 @@ export default function LabwareModal() {
 
   const handleSelect = (labwareId) => {
     const lw = library[labwareId];
-    const needsConfig = lw && (lw.metadata.displayCategory === 'reservoir' || lw.metadata.isSource);
+    const needsConfig = lw && (lw.metadata.displayCategory === 'reservoir' || lw.metadata.displayCategory === 'tipRack' || lw.metadata.isSource);
     if (needsConfig) {
       openModal('deckLabwareConfig', { pendingLabwareConfig: { slotId: modalSlotId, labwareId } });
     } else {
@@ -29,24 +29,27 @@ export default function LabwareModal() {
       </div>
 
       <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
-        {Object.entries(library).map(([id, lw]) => (
-          <button
-            key={id}
-            onClick={() => handleSelect(id)}
-            className="w-full flex items-center gap-3 p-3 rounded-xl border border-surface-200 hover:border-primary-300 hover:bg-primary-50 transition-all text-left"
-          >
-            <Beaker className="w-5 h-5 text-primary-500 shrink-0" />
-            <div>
-              <p className="font-medium text-surface-800">{lw.metadata.displayName}</p>
-              <p className="text-xs text-surface-500">{lw.metadata.brand || 'Sin marca'} · {lw.grid.rows}×{lw.grid.columns}</p>
-            </div>
-            {(lw.metadata.displayCategory === 'reservoir' || lw.metadata.isSource) && (
-              <span className="ml-auto text-[10px] font-bold uppercase tracking-wide bg-primary-100 text-primary-700 px-2 py-0.5 rounded-md">
-                Configurable
-              </span>
-            )}
-          </button>
-        ))}
+        {Object.entries(library).map(([id, lw]) => {
+          const isConfigurable = lw.metadata.displayCategory === 'reservoir' || lw.metadata.displayCategory === 'tipRack' || lw.metadata.isSource;
+          return (
+            <button
+              key={id}
+              onClick={() => handleSelect(id)}
+              className="w-full flex items-center gap-3 p-3 rounded-xl border border-surface-200 hover:border-primary-300 hover:bg-primary-50 transition-all text-left"
+            >
+              <Beaker className="w-5 h-5 text-primary-500 shrink-0" />
+              <div>
+                <p className="font-medium text-surface-800">{lw.metadata.displayName}</p>
+                <p className="text-xs text-surface-500">{lw.metadata.brand || 'Sin marca'} · {lw.grid.rows}×{lw.grid.columns}</p>
+              </div>
+              {isConfigurable && (
+                <span className="ml-auto text-[10px] font-bold uppercase tracking-wide bg-primary-100 text-primary-700 px-2 py-0.5 rounded-md">
+                  Configurable
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       <div className="mt-4 text-right">

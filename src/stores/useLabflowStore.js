@@ -253,8 +253,15 @@ export const useLabflowStore = create(
         const labware = state.labwareLibrary[labwareId];
         if (labware) {
           const copy = JSON.parse(JSON.stringify(labware));
-          if (config && config.initialVolume != null) {
-            copy.deckConfig = { initialVolume: parseFloat(config.initialVolume), hasLiquid: true };
+          if (config) {
+            copy.deckConfig = copy.deckConfig || {};
+            if (config.initialVolume != null) {
+              copy.deckConfig.initialVolume = parseFloat(config.initialVolume);
+              copy.deckConfig.hasLiquid = true;
+            }
+            if (config.availableTips) {
+              copy.deckConfig.availableTips = config.availableTips;
+            }
           }
           state.deck[slotId] = copy;
           get().pushHistory();

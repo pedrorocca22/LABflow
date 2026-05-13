@@ -193,24 +193,54 @@ export default function LabwareDetail() {
                 const rVal = labware.wellProperties.diameter / 2;
                 const isSelected = wellsToHighlight.has(wellId);
                 const hasVolume = wellVolumes.has(wellId) && wellVolumes.get(wellId) > 0;
+                
+                const isTipRack = labware.metadata.displayCategory === 'tipRack';
+                const hasTip = isTipRack && (!labware.deckConfig || labware.deckConfig?.availableTips?.includes(wellId));
 
                 return (
                   <g key={wellId}>
-                    <circle
-                      cx={cx}
-                      cy={cy}
-                      r={rVal}
-                      data-well-id={wellId}
-                      className={`transition-all duration-100 ${
-                        isSelected
-                          ? 'fill-primary-300 stroke-primary-700'
-                          : hasVolume
-                          ? 'fill-surface-200 stroke-surface-400'
-                          : 'fill-white stroke-surface-300'
-                      }`}
-                      strokeWidth={isSelected ? 1 : 0.5}
-                    />
-                    {hasVolume && (
+                    {isTipRack ? (
+                      <rect
+                        x={cx - rVal}
+                        y={cy - rVal}
+                        width={rVal * 2}
+                        height={rVal * 2}
+                        rx={2}
+                        data-well-id={wellId}
+                        className={`transition-all duration-100 ${
+                          isSelected
+                            ? 'fill-primary-200 stroke-primary-600'
+                            : 'fill-surface-100 stroke-surface-300'
+                        }`}
+                        strokeWidth={isSelected ? 1 : 0.5}
+                      />
+                    ) : (
+                      <circle
+                        cx={cx}
+                        cy={cy}
+                        r={rVal}
+                        data-well-id={wellId}
+                        className={`transition-all duration-100 ${
+                          isSelected
+                            ? 'fill-primary-300 stroke-primary-700'
+                            : hasVolume
+                            ? 'fill-surface-200 stroke-surface-400'
+                            : 'fill-white stroke-surface-300'
+                        }`}
+                        strokeWidth={isSelected ? 1 : 0.5}
+                      />
+                    )}
+                    
+                    {isTipRack && hasTip && (
+                      <circle
+                        cx={cx}
+                        cy={cy}
+                        r={rVal * 0.5}
+                        className="fill-orange-500 pointer-events-none"
+                      />
+                    )}
+
+                    {!isTipRack && hasVolume && (
                       <text
                         x={cx}
                         y={cy + 1}
