@@ -47,6 +47,12 @@ This system is completely agnostic to the underlying hardware of the motors, foc
 - **Global State:** Zustand (Immutable and ultra-fast management of mathematical simulations).
 - **Styling:** Tailwind CSS
 
+
+
+https://github.com/user-attachments/assets/fd0e5314-b21c-4daa-a3a3-caef1fc1c63b
+
+
+
 ##  Installation and Local Development
 
 To deploy Labflow locally in development mode:
